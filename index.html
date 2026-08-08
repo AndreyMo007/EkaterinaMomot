@@ -406,6 +406,44 @@
             top: 56px;
             background: #fff;
             z-index: 10;
+            position: relative;
+        }
+
+        /* Кнопки управления темой */
+        .topic-admin-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .topic-admin-btn {
+            background: none;
+            border: 1px solid #ddd;
+            padding: 4px 10px;
+            font-size: 11px;
+            cursor: pointer;
+            border-radius: 4px;
+            color: #888;
+            transition: 0.15s;
+        }
+
+        .topic-admin-btn:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .topic-admin-btn.edit-btn:hover {
+            background: #e8f0fe;
+            color: #1a73e8;
+            border-color: #1a73e8;
+        }
+
+        .topic-admin-btn.delete-btn:hover {
+            background: #fef2f2;
+            color: #ef4444;
+            border-color: #ef4444;
         }
 
         .topic-block {
@@ -440,6 +478,8 @@
             line-height: 1.7;
         }
 
+        /* РАЗМЕРЫ ФОТОГРАФИЙ В СПРАВОЧНИКЕ */
+        /* Изменить размеры можно здесь: */
         .topic-images {
             display: grid;
             gap: 2px;
@@ -459,9 +499,20 @@
             aspect-ratio: 1;
         }
 
-        .topic-images.img-1 img { aspect-ratio: 16/9; max-height: 200px; }
-        .topic-images.img-2 img { max-height: 160px; }
-        .topic-images.img-3 img { max-height: 140px; }
+        /* ИЗМЕНИТЬ РАЗМЕРЫ ФОТО В СПРАВОЧНИКЕ ЗДЕСЬ: */
+        .topic-images.img-1 img { aspect-ratio: 16/9; max-height: 200px; }  /* 1 фото */
+        .topic-images.img-2 img { max-height: 160px; }  /* 2 фото */
+        .topic-images.img-3 img { max-height: 140px; }  /* 3 фото */
+
+        /* РАЗМЕРЫ ФОТО В ПУБЛИКАЦИЯХ */
+        .chat-images.img-1 img { aspect-ratio: 16/9; max-height: 180px; }  /* 1 фото в чате */
+        .chat-images.img-2 img { max-height: 140px; }  /* 2 фото в чате */
+        .chat-images.img-3 img { max-height: 120px; }  /* 3 фото в чате */
+        .chat-images.img-4 img { max-height: 120px; }  /* 4 фото в чате */
+        .chat-images.img-5 img,
+        .chat-images.img-6 img,
+        .chat-images.img-7 img,
+        .chat-images.img-8 img { max-height: 100px; }  /* 5-8 фото в чате */
 
         .block-actions {
             display: flex;
@@ -599,15 +650,6 @@
             border-radius: 6px;
             aspect-ratio: 1;
         }
-
-        .chat-images.img-1 img { aspect-ratio: 16/9; max-height: 180px; }
-        .chat-images.img-2 img { max-height: 140px; }
-        .chat-images.img-3 img { max-height: 120px; }
-        .chat-images.img-4 img { max-height: 120px; }
-        .chat-images.img-5 img,
-        .chat-images.img-6 img,
-        .chat-images.img-7 img,
-        .chat-images.img-8 img { max-height: 100px; }
 
         .chat-meta {
             font-size: 11px;
@@ -1387,10 +1429,9 @@
 
     <script>
         // Supabase конфигурация
-        const SUPABASE_URL = 'https://kooezohesaqxoghxemup.supabase.co';  // Правильный URL (с буквой "p")
+        const SUPABASE_URL = 'https://kooezohesaqxoghxemup.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtvb2V6b2hlc2FxeG9naHhlbXVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwOTQ1MTksImV4cCI6MjEwMTY3MDUxOX0.Z9-_E_-Vaw0MGZrfFa60o1Y3zn9kMpQL5e_HVIwZumk';
         
-        // Создаем клиент Supabase один раз
         let supabaseClient = null;
         try {
             if (typeof supabase !== 'undefined' && supabase.createClient) {
@@ -1401,7 +1442,6 @@
             console.log('⚠️ Supabase не подключен');
         }
         
-        // Проверка на админа
         let isAdmin = false;
         let currentUserId = 'user_' + Math.random().toString(36).substr(2, 9);
         
@@ -1429,7 +1469,6 @@
             }
         }
 
-        // Данные
         let data = { 
             vastu: { sections: {} }, 
             astrology: { sections: {} }, 
@@ -1450,6 +1489,7 @@
         let editingTopicId = null;
         let scrollToTopicId = null;
         let currentCategory = 'vastu';
+        let editingTopicNameId = null;
 
         window.checkWordLength = function(input, maxLen) {
             const warning = document.getElementById(input.id + 'CharWarning');
@@ -1462,17 +1502,12 @@
             return { vastu: 'Васту', astrology: 'Астрология', esoteric: 'Эзотерика', chat: 'Чат' }[cat] || cat;
         }
 
-        function getTopicIdsInSection(sectionId) {
-            const sec = data[currentCategory].sections[sectionId];
-            if (!sec) return [];
-            return Object.keys(sec.topics);
-        }
-
         window.switchTab = function(tab, el) {
             currentTab = tab;
             currentFilter = null;
             editingPubId = null;
             editingBlockIndex = null;
+            editingTopicNameId = null;
             scrollToTopicId = null;
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
             el.classList.add('active');
@@ -1516,7 +1551,6 @@
         async function loadData() {
             if (supabaseClient) {
                 try {
-                    // Загружаем справочник
                     const { data: refData } = await supabaseClient.from('reference').select('*').eq('id', 1).single();
                     if (refData && refData.data && refData.data.vastu) {
                         data = refData.data;
@@ -1525,11 +1559,9 @@
                         await saveData();
                     }
                     
-                    // Загружаем публикации
                     const { data: pubs } = await supabaseClient.from('publications').select('*').order('date', { ascending: false });
                     if (pubs && pubs.length > 0) publications = pubs;
                     
-                    // Загружаем чат
                     const { data: chat } = await supabaseClient.from('chat').select('*').order('timestamp', { ascending: true });
                     if (chat && chat.length > 0) chatMessages = chat;
                 } catch(e) {
@@ -1645,7 +1677,22 @@
                     for (let tid in sec.topics) {
                         const topic = sec.topics[tid];
                         html += `<div class="topic-section-block" id="topic-${tid}">`;
-                        html += `<div class="topic-name-header">${topic.name}</div>`;
+                        
+                        // Название темы с кнопками админа
+                        html += `<div class="topic-name-header">`;
+                        if (editingTopicNameId === tid && isAdmin) {
+                            html += `<input type="text" id="editTopicName-${tid}" value="${escapeAttr(topic.name)}" style="font-size:20px;font-weight:700;text-align:center;width:60%;padding:5px;border:2px solid #6c3fc0;border-radius:6px;">`;
+                            html += `<div style="margin-top:8px;"><button class="edit-save" onclick="saveTopicName('${tid}')" style="padding:5px 15px;">Сохранить</button> <button class="edit-cancel" onclick="cancelEditTopicName()" style="padding:5px 15px;">Отмена</button></div>`;
+                        } else {
+                            html += topic.name;
+                            if (isAdmin) {
+                                html += `<div class="topic-admin-actions">
+                                    <button class="topic-admin-btn edit-btn" onclick="editTopicName('${tid}')">✏️ Изменить</button>
+                                    <button class="topic-admin-btn delete-btn" onclick="deleteTopic('${tid}')">🗑️ Удалить</button>
+                                </div>`;
+                            }
+                        }
+                        html += `</div>`;
                         
                         if (topic.blocks && topic.blocks.length > 0) {
                             topic.blocks.forEach((block, i) => {
@@ -1691,6 +1738,48 @@
                 renderFeed();
             }
         }
+
+        // Функции для работы с темами
+        window.editTopicName = function(tid) {
+            if (!isAdmin) return;
+            editingTopicNameId = tid;
+            renderContent();
+        };
+
+        window.cancelEditTopicName = function() {
+            editingTopicNameId = null;
+            renderContent();
+        };
+
+        window.saveTopicName = function(tid) {
+            if (!isAdmin) return;
+            const input = document.getElementById('editTopicName-' + tid);
+            if (!input) return;
+            const newName = input.value.trim();
+            if (!newName) return;
+            
+            const sec = data[currentCategory]?.sections[currentFilter.sectionId];
+            if (sec && sec.topics[tid]) {
+                sec.topics[tid].name = newName;
+                saveData();
+            }
+            editingTopicNameId = null;
+            renderContent();
+            renderReference();
+        };
+
+        window.deleteTopic = function(tid) {
+            if (!isAdmin) return;
+            const sec = data[currentCategory]?.sections[currentFilter.sectionId];
+            const topic = sec?.topics[tid];
+            if (!topic) return;
+            if (!confirm(`Удалить тему "${topic.name}" и всё её содержимое?`)) return;
+            
+            delete sec.topics[tid];
+            saveData();
+            renderContent();
+            renderReference();
+        };
 
         window.editBlock = function(tid, index) {
             if (!isAdmin) return;
@@ -1905,7 +1994,8 @@
         window.goBackToFeed = function() { 
             currentFilter = null; 
             editingBlockIndex = null; 
-            editingTopicId = null; 
+            editingTopicId = null;
+            editingTopicNameId = null; 
             scrollToTopicId = null; 
             renderContent(); 
             renderReference(); 
@@ -1957,6 +2047,7 @@
             editingPubId = null; 
             editingBlockIndex = null;
             editingTopicId = null;
+            editingTopicNameId = null;
             scrollToTopicId = tid;
             renderContent(); 
             renderReference(); 
@@ -1968,6 +2059,7 @@
             editingPubId = null; 
             editingBlockIndex = null;
             editingTopicId = null;
+            editingTopicNameId = null;
             scrollToTopicId = null;
             renderContent(); 
             renderReference(); 
@@ -1985,7 +2077,6 @@
             if (rw && !rw.contains(e.target)) closeReference(); 
         });
 
-        // Форма справочника
         window.openForm = function() {
             if (!isAdmin) return;
             selectedSectionId = null; 
@@ -2190,7 +2281,6 @@
             renderReference();
         };
 
-        // Форма публикации
         window.openPublishForm = function() {
             document.getElementById('pubTitle').value = ''; 
             document.getElementById('pubText').value = ''; 
@@ -2299,7 +2389,6 @@
             return text.replace(/'/g,"\\'").replace(/"/g,'\\"'); 
         }
 
-        // Запуск приложения
         loadData();
         updateAdminUI();
         renderContent();
