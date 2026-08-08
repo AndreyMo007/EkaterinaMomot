@@ -1390,7 +1390,16 @@
         const SUPABASE_URL = 'https://kooezohesaqxoghxemu.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_cC7lDtaA9YqXIdnq5d3McA_td_E29Qp';
         
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // Создаем клиент Supabase один раз
+        let supabaseClient = null;
+        try {
+            if (typeof supabase !== 'undefined' && supabase.createClient) {
+                supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                console.log('✅ Supabase подключен');
+            }
+        } catch(e) {
+            console.log('⚠️ Supabase не подключен');
+        }
         
         // Проверка на админа
         let isAdmin = false;
@@ -1476,7 +1485,7 @@
                 mainWrap.style.display = 'none';
                 chatWrap.style.display = 'block';
                 addButtons.style.display = 'none';
-                loadChatFromSupabase();
+                loadData();
             } else {
                 mainWrap.style.display = 'block';
                 chatWrap.style.display = 'none';
@@ -1488,7 +1497,7 @@
                     esoteric: 'Скрытые знания' 
                 }[tab];
                 currentCategory = tab;
-                loadDataFromSupabase();
+                loadData();
             }
         };
 
@@ -1504,76 +1513,89 @@
             }, 150);
         }
 
-        async function loadDataFromSupabase() {
-            try {
-                const { data: refData } = await supabase.from('reference').select('*').eq('id', 1).single();
-                if (refData && refData.data) {
-                    data = refData.data;
-                } else if (Object.keys(data.vastu.sections).length === 0) {
-                    initDemoData();
-                    await saveDataToSupabase();
+        async function loadData() {
+            if (supabaseClient) {
+                try {
+                    // Загружаем справочник
+                    const { data: refData } = await supabaseClient.from('reference').select('*').eq('id', 1).single();
+                    if (refData && refData.data && refData.data.vastu) {
+                        data = refData.data;
+                    } else if (Object.keys(data.vastu.sections).length === 0) {
+                        initDemoData();
+                        await saveData();
+                    }
+                    
+                    // Загружаем публикации
+                    const { data: pubs } = await supabaseClient.from('publications').select('*').order('date', { ascending: false });
+                    if (pubs && pubs.length > 0) publications = pubs;
+                    
+                    // Загружаем чат
+                    const { data: chat } = await supabaseClient.from('chat').select('*').order('timestamp', { ascending: true });
+                    if (chat && chat.length > 0) chatMessages = chat;
+                } catch(e) {
+                    console.log('Загрузка из localStorage');
+                    loadFromLocalStorage();
                 }
-                
-                const { data: pubs } = await supabase.from('publications').select('*').order('date', { ascending: false });
-                if (pubs) publications = pubs;
-            } catch(e) {
-                console.log('Загрузка из localStorage (ошибка Supabase)');
+            } else {
                 loadFromLocalStorage();
             }
             
             renderContent();
             renderReference();
-        }
-
-        async function loadChatFromSupabase() {
-            try {
-                const { data: chat } = await supabase.from('chat').select('*').order('timestamp', { ascending: true });
-                if (chat) chatMessages = chat;
-            } catch(e) {
-                console.log('Чат из localStorage');
-                const savedChat = localStorage.getItem('sp_chat_v4');
-                if (savedChat) { try { chatMessages = JSON.parse(savedChat); } catch(e) {} }
-            }
-            renderChat();
+            if (currentTab === 'chat') renderChat();
         }
 
         function loadFromLocalStorage() {
-            const saved = localStorage.getItem('sp_data_v4');
-            if (saved) { try { data = JSON.parse(saved); } catch(e) {} }
+            const saved = localStorage.getItem('sp_data_v5');
+            if (saved) { 
+                try { 
+                    const parsed = JSON.parse(saved);
+                    if (parsed && parsed.vastu) data = parsed;
+                } catch(e) {} 
+            }
             if (Object.keys(data.vastu.sections).length === 0) initDemoData();
             
-            const savedPubs = localStorage.getItem('sp_pubs_v4');
+            const savedPubs = localStorage.getItem('sp_pubs_v5');
             if (savedPubs) { try { publications = JSON.parse(savedPubs); } catch(e) {} }
+            
+            const savedChat = localStorage.getItem('sp_chat_v5');
+            if (savedChat) { try { chatMessages = JSON.parse(savedChat); } catch(e) {} }
         }
 
-        async function saveDataToSupabase() {
-            localStorage.setItem('sp_data_v4', JSON.stringify(data));
-            try {
-                await supabase.from('reference').upsert({ id: 1, data: data });
-            } catch(e) {
-                console.log('Сохранено только в localStorage');
-            }
-        }
-
-        async function savePublicationsToSupabase() {
-            localStorage.setItem('sp_pubs_v4', JSON.stringify(publications));
-            try {
-                await supabase.from('publications').delete().neq('id', '0');
-                if (publications.length > 0) {
-                    await supabase.from('publications').insert(publications);
+        async function saveData() {
+            localStorage.setItem('sp_data_v5', JSON.stringify(data));
+            if (supabaseClient) {
+                try {
+                    await supabaseClient.from('reference').upsert({ id: 1, data: data });
+                } catch(e) {
+                    console.log('Сохранено в localStorage');
                 }
-            } catch(e) {
-                console.log('Публикации сохранены в localStorage');
             }
         }
 
-        async function saveChatToSupabase() {
-            localStorage.setItem('sp_chat_v4', JSON.stringify(chatMessages));
-            try {
-                const msg = chatMessages[chatMessages.length - 1];
-                if (msg) await supabase.from('chat').insert([msg]);
-            } catch(e) {
-                console.log('Чат сохранен в localStorage');
+        async function savePublications() {
+            localStorage.setItem('sp_pubs_v5', JSON.stringify(publications));
+            if (supabaseClient) {
+                try {
+                    await supabaseClient.from('publications').delete().neq('id', '0');
+                    if (publications.length > 0) {
+                        await supabaseClient.from('publications').insert(publications);
+                    }
+                } catch(e) {
+                    console.log('Публикации сохранены в localStorage');
+                }
+            }
+        }
+
+        async function saveChat() {
+            localStorage.setItem('sp_chat_v5', JSON.stringify(chatMessages));
+            if (supabaseClient) {
+                try {
+                    const msg = chatMessages[chatMessages.length - 1];
+                    if (msg) await supabaseClient.from('chat').insert([msg]);
+                } catch(e) {
+                    console.log('Чат сохранен в localStorage');
+                }
             }
         }
 
@@ -1693,7 +1715,7 @@
             if (topic && topic.blocks && topic.blocks[index]) {
                 topic.blocks[index].title = titleEl.value.trim();
                 topic.blocks[index].text = textEl.value.trim();
-                saveDataToSupabase();
+                saveData();
             }
             editingBlockIndex = null;
             editingTopicId = null;
@@ -1707,7 +1729,7 @@
             const topic = sec?.topics[tid];
             if (topic && topic.blocks) {
                 topic.blocks.splice(index, 1);
-                saveDataToSupabase();
+                saveData();
                 renderContent();
                 renderReference();
             }
@@ -1792,7 +1814,7 @@
             if (newText !== null && newText.trim() !== '') {
                 msg.text = newText.trim();
                 msg.edited = true;
-                saveChatToSupabase();
+                saveChat();
                 renderChat();
             }
         };
@@ -1804,7 +1826,7 @@
             
             msg.deleted = true;
             msg.deletedBy = isAdmin && msg.userId !== currentUserId ? 'admin' : 'user';
-            saveChatToSupabase();
+            saveChat();
             renderChat();
         };
 
@@ -1851,7 +1873,7 @@
             };
             
             chatMessages.push(msg);
-            saveChatToSupabase();
+            saveChat();
             input.value = '';
             uploadedChatImages = [];
             renderChatImagePreview();
@@ -1867,7 +1889,7 @@
             const pub = publications.find(p => p.id === id); 
             if (pub) { 
                 pub.text = ta.value.trim(); 
-                savePublicationsToSupabase(); 
+                savePublications(); 
             }
             editingPubId = null; 
             renderFeed();
@@ -1876,7 +1898,7 @@
             if (!isAdmin) return; 
             if (confirm('Удалить?')) { 
                 publications = publications.filter(p => p.id !== id); 
-                savePublicationsToSupabase(); 
+                savePublications(); 
                 renderFeed(); 
             } 
         };
@@ -2082,7 +2104,7 @@
             const sid = generateId(); 
             if (!data[currentCategory]) data[currentCategory] = { sections: {} };
             data[currentCategory].sections[sid] = { name, topics: {} }; 
-            saveDataToSupabase();
+            saveData();
             selectedSectionId = sid; 
             selectedTopicId = null;
             document.getElementById('sectionBtn').textContent = name; 
@@ -2102,7 +2124,7 @@
             const sec = data[currentCategory]?.sections[selectedSectionId];
             if (!sec) return;
             sec.topics[tid] = { name, blocks: [] }; 
-            saveDataToSupabase();
+            saveData();
             selectedTopicId = tid; 
             document.getElementById('topicBtn').textContent = name;
             document.getElementById('topicCreateInput').style.display = 'none'; 
@@ -2155,7 +2177,7 @@
             if (!sec?.topics[selectedTopicId]) return;
             if (!sec.topics[selectedTopicId].blocks) sec.topics[selectedTopicId].blocks = [];
             sec.topics[selectedTopicId].blocks.push({ title, text, images: [...uploadedRefImages] });
-            saveDataToSupabase();
+            saveData();
             document.getElementById('refTitle').value = ''; 
             document.getElementById('postText').value = ''; 
             uploadedRefImages = []; 
@@ -2232,7 +2254,7 @@
                 images: [...uploadedImages], 
                 date: new Date().toISOString().split('T')[0] 
             });
-            savePublicationsToSupabase();
+            savePublications();
             document.getElementById('pubTitle').value = ''; 
             document.getElementById('pubText').value = ''; 
             uploadedImages = []; 
@@ -2278,7 +2300,7 @@
         }
 
         // Запуск приложения
-        loadDataFromSupabase();
+        loadData();
         updateAdminUI();
         renderContent();
         renderReference();
