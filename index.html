@@ -1,0 +1,2288 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Духовные практики</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #1a1a1a;
+            line-height: 1.5;
+            scroll-behavior: smooth;
+        }
+
+        .header {
+            background: #fff;
+            border-bottom: 1px solid #e0e0e0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 56px;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 17px;
+            font-weight: 600;
+            color: #6c3fc0;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2px;
+        }
+
+        .nav-item {
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #555;
+            border-radius: 6px;
+            transition: 0.15s;
+            user-select: none;
+        }
+
+        .nav-item:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .nav-item.active {
+            background: #6c3fc0;
+            color: #fff;
+        }
+
+        .main-content {
+            max-width: 750px;
+            margin: 0 auto;
+            padding: 28px 20px;
+        }
+
+        .section-header {
+            margin-bottom: 8px;
+        }
+
+        .section-title-row {
+            display: flex;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+
+        .back-arrow {
+            font-size: 18px;
+            cursor: pointer;
+            color: #6c3fc0;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            transition: 0.15s;
+            user-select: none;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+            line-height: 1;
+            background: #f5f5f5;
+        }
+
+        .back-arrow:hover {
+            background: #e8e0f5;
+        }
+
+        .back-arrow.show {
+            display: flex;
+        }
+
+        .title-block {
+            flex: 1;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .section-subtitle {
+            color: #888;
+            font-size: 14px;
+        }
+
+        .breadcrumb-path {
+            font-size: 13px;
+            color: #6c3fc0;
+            margin-bottom: 20px;
+            font-weight: 500;
+            min-height: 20px;
+        }
+
+        .breadcrumb-path span {
+            color: #999;
+        }
+
+        .breadcrumb-path .sep {
+            color: #ccc;
+            margin: 0 6px;
+        }
+
+        .reference-btn {
+            padding: 8px 18px;
+            background: #fff;
+            border: 1px solid #d0d0d0;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            color: #444;
+            transition: 0.15s;
+            white-space: nowrap;
+            position: relative;
+        }
+
+        .reference-btn:hover {
+            background: #f5f5f5;
+            border-color: #bbb;
+        }
+
+        .reference-btn.active {
+            background: #f0ebff;
+            border-color: #6c3fc0;
+            color: #6c3fc0;
+        }
+
+        .reference-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 4px;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            min-width: 280px;
+            max-height: 400px;
+            overflow-y: auto;
+            z-index: 200;
+        }
+
+        .reference-dropdown.show {
+            display: block;
+        }
+
+        .ref-section {
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .ref-section:last-child {
+            border-bottom: none;
+        }
+
+        .ref-section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 10px 14px;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: 0.15s;
+        }
+
+        .ref-section-title:hover {
+            background: #f9f9f9;
+            color: #666;
+        }
+
+        .ref-section-title .arrow {
+            font-size: 10px;
+            transition: 0.2s;
+            color: #bbb;
+        }
+
+        .ref-section-title.open .arrow {
+            transform: rotate(90deg);
+            color: #6c3fc0;
+        }
+
+        .ref-topics {
+            display: none;
+            padding: 2px 0 8px 0;
+        }
+
+        .ref-topics.show {
+            display: block;
+        }
+
+        .ref-topic {
+            padding: 8px 14px 8px 28px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #444;
+            transition: 0.1s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ref-topic:hover {
+            background: #f5f0ff;
+            color: #6c3fc0;
+        }
+
+        .ref-topic.active-topic {
+            background: #6c3fc0;
+            color: #fff;
+        }
+
+        .ref-empty {
+            padding: 20px;
+            text-align: center;
+            color: #999;
+            font-size: 13px;
+        }
+
+        /* Публикации */
+        .feed-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .publication-card {
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+
+        .pub-header {
+            padding: 16px 20px 0;
+        }
+
+        .pub-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            line-height: 1.3;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .pub-text {
+            font-size: 15px;
+            color: #444;
+            line-height: 1.6;
+            margin-bottom: 12px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .pub-images {
+            display: grid;
+            gap: 1px;
+        }
+
+        .pub-images.img-1 { grid-template-columns: 1fr; }
+        .pub-images.img-2 { grid-template-columns: 1fr 1fr; }
+        .pub-images.img-3 { grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; }
+        .pub-images.img-3 .pub-img:first-child { grid-column: 1 / -1; }
+        .pub-images.img-4 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+        .pub-images.img-5,
+        .pub-images.img-6,
+        .pub-images.img-7,
+        .pub-images.img-8 { grid-template-columns: 1fr 1fr 1fr; }
+
+        .pub-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+            transition: 0.2s;
+            aspect-ratio: 1;
+        }
+
+        .pub-images.img-1 .pub-img { aspect-ratio: 16/9; max-height: 200px; }
+        .pub-images.img-2 .pub-img { aspect-ratio: 1; max-height: 180px; }
+        .pub-images.img-3 .pub-img:first-child { aspect-ratio: 16/9; max-height: 160px; }
+        .pub-images.img-3 .pub-img:not(:first-child) { aspect-ratio: 1; max-height: 140px; }
+        .pub-images.img-4 .pub-img { aspect-ratio: 1; max-height: 140px; }
+        .pub-images.img-5 .pub-img,
+        .pub-images.img-6 .pub-img,
+        .pub-images.img-7 .pub-img,
+        .pub-images.img-8 .pub-img { aspect-ratio: 1; max-height: 120px; }
+
+        .pub-img:hover { opacity: 0.9; }
+
+        .pub-footer {
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .pub-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .pub-action-btn {
+            background: none;
+            border: none;
+            font-size: 12px;
+            cursor: pointer;
+            color: #888;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: 0.15s;
+        }
+
+        .pub-action-btn:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .pub-action-btn.delete:hover {
+            background: #fef2f2;
+            color: #ef4444;
+        }
+
+        /* Справочник */
+        .topics-wrapper {
+            background: #fff;
+            border-radius: 12px;
+            padding: 32px 28px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+
+        .topic-section-block {
+            margin-bottom: 36px;
+            padding-bottom: 32px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .topic-section-block:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .topic-name-header {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+            text-align: center;
+            padding: 12px 10px 20px;
+            margin-bottom: 20px;
+            position: sticky;
+            top: 56px;
+            background: #fff;
+            z-index: 10;
+        }
+
+        .topic-block {
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #fff;
+            position: relative;
+        }
+
+        .topic-block:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .topic-subtitle {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .topic-text-block {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            margin-bottom: 8px;
+            font-size: 15px;
+            color: #444;
+            line-height: 1.7;
+        }
+
+        .topic-images {
+            display: grid;
+            gap: 2px;
+            margin: 8px 0;
+        }
+
+        .topic-images.img-1 { grid-template-columns: 1fr; }
+        .topic-images.img-2 { grid-template-columns: 1fr 1fr; }
+        .topic-images.img-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+        .topic-images img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+            border-radius: 8px;
+            aspect-ratio: 1;
+        }
+
+        .topic-images.img-1 img { aspect-ratio: 16/9; max-height: 200px; }
+        .topic-images.img-2 img { max-height: 160px; }
+        .topic-images.img-3 img { max-height: 140px; }
+
+        .block-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .block-action-btn {
+            background: none;
+            border: none;
+            font-size: 11px;
+            cursor: pointer;
+            color: #999;
+            padding: 3px 8px;
+            border-radius: 4px;
+            transition: 0.15s;
+        }
+
+        .block-action-btn:hover {
+            background: #f0f0f0;
+            color: #555;
+        }
+
+        .block-action-btn.delete-block:hover {
+            background: #fef2f2;
+            color: #ef4444;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: #999;
+            background: #fff;
+            border-radius: 12px;
+        }
+
+        /* Чат */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 56px);
+            max-width: 750px;
+            margin: 0 auto;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .chat-message {
+            display: flex;
+            gap: 8px;
+            max-width: 85%;
+            position: relative;
+        }
+
+        .chat-message.own {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .chat-message.deleted {
+            opacity: 0.6;
+        }
+
+        .chat-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #6c3fc0;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .chat-avatar.own-avatar {
+            background: #f97316;
+        }
+
+        .chat-bubble-wrapper {
+            flex: 1;
+        }
+
+        .chat-bubble {
+            background: #fff;
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.5;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            position: relative;
+        }
+
+        .chat-message.own .chat-bubble {
+            background: #f0ebff;
+        }
+
+        .chat-message.deleted .chat-bubble {
+            background: #f5f5f5;
+            color: #999;
+            font-style: italic;
+        }
+
+        .chat-images {
+            display: grid;
+            gap: 2px;
+            margin-top: 4px;
+        }
+
+        .chat-images.img-1 { grid-template-columns: 1fr; }
+        .chat-images.img-2 { grid-template-columns: 1fr 1fr; }
+        .chat-images.img-3 { grid-template-columns: 1fr 1fr 1fr; }
+        .chat-images.img-4 { grid-template-columns: 1fr 1fr; }
+        .chat-images.img-5,
+        .chat-images.img-6,
+        .chat-images.img-7,
+        .chat-images.img-8 { grid-template-columns: 1fr 1fr 1fr; }
+
+        .chat-images img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+            border-radius: 6px;
+            aspect-ratio: 1;
+        }
+
+        .chat-images.img-1 img { aspect-ratio: 16/9; max-height: 180px; }
+        .chat-images.img-2 img { max-height: 140px; }
+        .chat-images.img-3 img { max-height: 120px; }
+        .chat-images.img-4 img { max-height: 120px; }
+        .chat-images.img-5 img,
+        .chat-images.img-6 img,
+        .chat-images.img-7 img,
+        .chat-images.img-8 img { max-height: 100px; }
+
+        .chat-meta {
+            font-size: 11px;
+            color: #999;
+            margin-top: 2px;
+            padding: 0 4px;
+        }
+
+        .chat-meta .edited {
+            color: #6c3fc0;
+            font-style: italic;
+        }
+
+        .chat-message-actions {
+            display: none;
+            position: absolute;
+            top: -8px;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            z-index: 10;
+            padding: 4px;
+        }
+
+        .chat-message.own .chat-message-actions {
+            right: 0;
+        }
+
+        .chat-message:not(.own) .chat-message-actions {
+            left: 38px;
+        }
+
+        .chat-message:hover .chat-message-actions {
+            display: flex;
+            gap: 4px;
+        }
+
+        .chat-action-btn {
+            background: none;
+            border: none;
+            padding: 4px 8px;
+            font-size: 12px;
+            cursor: pointer;
+            border-radius: 4px;
+            color: #555;
+            white-space: nowrap;
+        }
+
+        .chat-action-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .chat-action-btn.delete-btn:hover {
+            background: #fef2f2;
+            color: #ef4444;
+        }
+
+        .chat-input-area {
+            padding: 12px 16px;
+            background: #fff;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .chat-input-area input[type="text"] {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1px solid #d0d0d0;
+            border-radius: 20px;
+            font-size: 14px;
+            font-family: inherit;
+            background: #fafafa;
+            outline: none;
+        }
+
+        .chat-input-area input[type="text"]:focus {
+            border-color: #6c3fc0;
+            background: #fff;
+        }
+
+        .chat-input-area button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: 0.15s;
+        }
+
+        .chat-img-btn {
+            background: #f0f0f0;
+            color: #555;
+        }
+
+        .chat-img-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .chat-send-btn {
+            background: #6c3fc0;
+            color: #fff;
+        }
+
+        .chat-send-btn:hover {
+            background: #5b32a8;
+        }
+
+        .chat-image-preview {
+            display: flex;
+            gap: 6px;
+            padding: 8px 16px 0;
+            flex-wrap: wrap;
+        }
+
+        .chat-image-preview .preview-item {
+            position: relative;
+            width: 50px;
+            height: 50px;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .chat-image-preview .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .chat-image-preview .preview-item .remove-img {
+            position: absolute;
+            top: 1px;
+            right: 1px;
+            background: rgba(0,0,0,0.6);
+            color: #fff;
+            border: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .add-buttons {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 90;
+        }
+
+        .add-btn {
+            width: 54px;
+            height: 54px;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 300;
+        }
+
+        .add-btn.post-btn {
+            background: #f97316;
+            font-size: 32px;
+        }
+        .add-btn.post-btn:hover {
+            background: #ea580c;
+        }
+
+        .add-btn.topic-btn {
+            background: #6c3fc0;
+        }
+        .add-btn.topic-btn:hover {
+            background: #5b32a8;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.4);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .overlay.show {
+            display: flex;
+        }
+
+        .form-box {
+            background: #fff;
+            width: 480px;
+            max-width: 94%;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .form-box .top {
+            padding: 18px 22px;
+            border-bottom: 1px solid #eee;
+            font-weight: 600;
+            font-size: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: #fff;
+            z-index: 1;
+        }
+
+        .form-box .close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #888;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: 0.15s;
+        }
+
+        .form-box .close:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .form-box .body {
+            padding: 20px 22px;
+        }
+
+        .publish-form-box {
+            background: #fff;
+            width: 600px;
+            max-width: 94%;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .publish-form-box .top {
+            padding: 18px 22px;
+            border-bottom: 1px solid #eee;
+            font-weight: 600;
+            font-size: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: #fff;
+            z-index: 1;
+            color: #f97316;
+        }
+
+        .publish-form-box .close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #888;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: 0.15s;
+        }
+
+        .publish-form-box .close:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .publish-form-box .body {
+            padding: 24px;
+        }
+
+        .field {
+            margin-bottom: 16px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .field-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .field-row .select-btn {
+            flex: 1;
+            padding: 9px 12px;
+            border: 1px solid #d0d0d0;
+            border-radius: 6px;
+            background: #fafafa;
+            cursor: pointer;
+            font-size: 13px;
+            color: #333;
+            text-align: left;
+            transition: 0.15s;
+        }
+
+        .field-row .select-btn:hover {
+            border-color: #aaa;
+            background: #f5f5f5;
+        }
+
+        .field-row .create-btn {
+            padding: 9px 14px;
+            border: 1px solid #d0d0d0;
+            border-radius: 6px;
+            background: #fff;
+            cursor: pointer;
+            font-size: 12px;
+            color: #6c3fc0;
+            white-space: nowrap;
+            transition: 0.15s;
+        }
+
+        .field-row .create-btn:hover {
+            background: #f5f0ff;
+            border-color: #b49de0;
+        }
+
+        .field input,
+        .field textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d0d0d0;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            background: #fafafa;
+        }
+
+        .field input:focus,
+        .field textarea:focus {
+            outline: none;
+            border-color: #6c3fc0;
+            background: #fff;
+        }
+
+        .pub-title-input {
+            font-size: 15px !important;
+            padding: 14px 16px !important;
+        }
+
+        .field textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .char-warning {
+            display: none;
+            color: #ef4444;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .char-warning.show {
+            display: block;
+        }
+
+        .image-upload-area {
+            border: 2px dashed #e0e0e0;
+            border-radius: 8px;
+            padding: 14px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-bottom: 10px;
+        }
+
+        .image-upload-area:hover {
+            border-color: #f97316;
+            background: #fff7ed;
+        }
+
+        .image-upload-area.purple-hover:hover {
+            border-color: #6c3fc0;
+            background: #f5f0ff;
+        }
+
+        .image-upload-area input {
+            display: none;
+        }
+
+        .image-upload-area .upload-text {
+            color: #999;
+            font-size: 13px;
+        }
+
+        .image-preview {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+            margin-bottom: 8px;
+        }
+
+        .image-preview .preview-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 6px;
+            overflow: hidden;
+            max-width: 50px;
+            max-height: 50px;
+        }
+
+        .image-preview .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-preview .preview-item .remove-img {
+            position: absolute;
+            top: 1px;
+            right: 1px;
+            background: rgba(0,0,0,0.6);
+            color: #fff;
+            border: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-preview.topic-preview {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .image-preview.topic-preview .preview-item {
+            max-width: 45px;
+            max-height: 45px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .submit-btn.purple {
+            background: #6c3fc0;
+        }
+        .submit-btn.purple:hover {
+            background: #5b32a8;
+        }
+
+        .submit-btn.orange {
+            background: #f97316;
+        }
+        .submit-btn.orange:hover {
+            background: #ea580c;
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .mini-select {
+            display: none;
+            position: absolute;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 10;
+            min-width: 180px;
+        }
+
+        .mini-select.show {
+            display: block;
+        }
+
+        .mini-select .option {
+            padding: 8px 14px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: 0.1s;
+        }
+
+        .mini-select .option:hover {
+            background: #f5f0ff;
+            color: #6c3fc0;
+        }
+
+        .mini-select .no-option {
+            padding: 8px 14px;
+            font-size: 13px;
+            color: #999;
+        }
+
+        .relative {
+            position: relative;
+        }
+
+        .ref-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .image-viewer {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 300;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .image-viewer.show {
+            display: flex;
+        }
+
+        .image-viewer img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+
+        .edit-textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 10px;
+            border: 2px solid #6c3fc0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 15px;
+            resize: vertical;
+        }
+
+        .edit-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .edit-actions button {
+            padding: 6px 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .edit-save {
+            background: #6c3fc0;
+            color: #fff;
+        }
+
+        .edit-cancel {
+            background: #f0f0f0;
+            color: #555;
+        }
+
+        @media (max-width: 600px) {
+            .nav-item {
+                padding: 8px 10px;
+                font-size: 13px;
+            }
+            
+            .reference-dropdown {
+                min-width: 250px;
+                right: -50px;
+            }
+            
+            .topic-name-header {
+                font-size: 20px;
+                padding: 10px 5px 16px;
+            }
+            
+            .topics-wrapper {
+                padding: 24px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <nav class="navbar">
+            <div class="logo">Духовные практики</div>
+            <div class="nav-menu">
+                <div class="nav-item active" onclick="switchTab('vastu', this)">Васту</div>
+                <div class="nav-item" onclick="switchTab('astrology', this)">Астрология</div>
+                <div class="nav-item" onclick="switchTab('esoteric', this)">Эзотерика</div>
+                <div class="nav-item" onclick="switchTab('chat', this)">Чат</div>
+            </div>
+        </nav>
+    </header>
+
+    <div id="mainContentWrap">
+    <main class="main-content" id="mainContent">
+        <div class="section-header">
+            <div class="section-title-row">
+                <div class="back-arrow" id="backArrow" onclick="goBackToFeed()">←</div>
+                <div class="title-block">
+                    <div class="section-title" id="title">Васту</div>
+                    <div class="section-subtitle" id="subtitle">Гармония пространства</div>
+                </div>
+                <div class="ref-wrapper" id="refWrapper">
+                    <button class="reference-btn" id="refBtn" onclick="toggleReference()">Справочник</button>
+                    <div class="reference-dropdown" id="refDropdown"></div>
+                </div>
+            </div>
+            <div class="breadcrumb-path" id="breadcrumb"></div>
+        </div>
+        <div id="contentArea">
+            <div class="feed-list" id="posts"></div>
+        </div>
+    </main>
+    </div>
+
+    <div id="chatWrap" style="display:none;">
+        <div class="chat-container">
+            <div class="chat-messages" id="chatMessages"></div>
+            <div class="chat-image-preview" id="chatImagePreview"></div>
+            <div class="chat-input-area">
+                <input type="file" id="chatImageInput" accept="image/*" multiple onchange="handleChatImages(event)" style="display:none;">
+                <button class="chat-img-btn" onclick="document.getElementById('chatImageInput').click()">📷</button>
+                <input type="text" id="chatInput" placeholder="Сообщение..." onkeydown="if(event.key==='Enter')sendChatMessage()">
+                <button class="chat-send-btn" onclick="sendChatMessage()">➤</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="add-buttons" id="addButtons">
+        <button class="add-btn post-btn" onclick="openPublishForm()" title="Создать публикацию">+</button>
+        <button class="add-btn topic-btn" id="topicAddBtn" onclick="openForm()" title="Справочник" style="display:none;">+</button>
+    </div>
+
+    <!-- Форма справочника -->
+    <div class="overlay" id="formOverlay">
+        <div class="form-box">
+            <div class="top">Справочник <button class="close" onclick="closeForm()">&times;</button></div>
+            <div class="body">
+                <div class="field">
+                    <label>Раздел</label>
+                    <div class="field-row relative" id="sectionRow">
+                        <button class="select-btn" id="sectionBtn" onclick="toggleSectionSelect()">Выберите раздел</button>
+                        <button class="create-btn" onclick="showCreateInput('section')">+ Создать</button>
+                        <div class="mini-select" id="sectionSelect"></div>
+                    </div>
+                    <div id="sectionCreateInput" style="display:none; margin-top:8px;">
+                        <input type="text" id="newSectionName" placeholder="Название нового раздела" oninput="checkWordLength(this, 30)">
+                        <div class="char-warning" id="newSectionNameCharWarning">Слово слишком длинное! Максимум 30 символов.</div>
+                        <button class="create-btn" style="margin-top:6px;" onclick="createSection()">✓ Сохранить раздел</button>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Тема</label>
+                    <div class="field-row relative" id="topicRow">
+                        <button class="select-btn" id="topicBtn" onclick="toggleTopicSelect()">Выберите тему</button>
+                        <button class="create-btn" onclick="showCreateInput('topic')">+ Создать</button>
+                        <div class="mini-select" id="topicSelect"></div>
+                    </div>
+                    <div id="topicCreateInput" style="display:none; margin-top:8px;">
+                        <input type="text" id="newTopicName" placeholder="Название новой темы" oninput="checkWordLength(this, 30)">
+                        <div class="char-warning" id="newTopicNameCharWarning">Слово слишком длинное! Максимум 30 символов.</div>
+                        <button class="create-btn" style="margin-top:6px;" onclick="createTopic()">✓ Сохранить тему</button>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Заголовок</label>
+                    <input type="text" id="refTitle" placeholder="Заголовок для этого текста..." oninput="checkWordLength(this, 40)">
+                    <div class="char-warning" id="refTitleCharWarning">Слово слишком длинное! Максимум 40 символов.</div>
+                </div>
+                <div class="field">
+                    <label>Текст</label>
+                    <textarea id="postText" placeholder="Введите текст..." oninput="checkWordLength(this, 50)"></textarea>
+                    <div class="char-warning" id="postTextCharWarning">Слово слишком длинное! Максимум 50 символов.</div>
+                </div>
+                <div class="field">
+                    <label>Картинки (до 3)</label>
+                    <div class="image-preview topic-preview" id="refImagePreview"></div>
+                    <div class="image-upload-area purple-hover" onclick="document.getElementById('refImageInput').click()">
+                        <div class="upload-text">📷 Добавить картинки</div>
+                        <input type="file" id="refImageInput" accept="image/*" multiple onchange="handleRefImages(event)">
+                    </div>
+                </div>
+                <button class="submit-btn purple" onclick="submitPost()">Добавить в тему</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Форма публикации -->
+    <div class="overlay" id="publishOverlay">
+        <div class="publish-form-box">
+            <div class="top">Создание публикации <button class="close" onclick="closePublishForm()">&times;</button></div>
+            <div class="body">
+                <div class="field">
+                    <label>Заголовок (необязательно)</label>
+                    <input type="text" id="pubTitle" placeholder="Введите заголовок" class="pub-title-input" oninput="checkWordLength(this, 40)">
+                    <div class="char-warning" id="pubTitleCharWarning">Слово слишком длинное! Максимум 40 символов.</div>
+                </div>
+                <div class="field">
+                    <label>Текст</label>
+                    <textarea id="pubText" placeholder="Текст публикации" style="height:120px;" oninput="checkWordLength(this, 50)"></textarea>
+                    <div class="char-warning" id="pubTextCharWarning">Слово слишком длинное! Максимум 50 символов.</div>
+                </div>
+                <div class="field">
+                    <label>Картинки (до 8)</label>
+                    <div class="image-preview" id="imagePreview"></div>
+                    <div class="image-upload-area" onclick="document.getElementById('imageInput').click()">
+                        <div class="upload-text">📷 Добавить картинки</div>
+                        <input type="file" id="imageInput" accept="image/*" multiple onchange="handleImages(event)">
+                    </div>
+                </div>
+                <button class="submit-btn orange" onclick="submitPublication()">Опубликовать</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="image-viewer" id="imageViewer" onclick="closeImageViewer()">
+        <img id="viewerImage" src="" alt="">
+    </div>
+
+    <script>
+        // Supabase конфигурация
+        const SUPABASE_URL = 'https://kooezohesaqxoghxemu.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_cC7lDtaA9YqXIdnq5d3McA_td_E29Qp';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        
+        // Проверка на админа
+        let isAdmin = false;
+        let currentUserId = 'user_' + Math.random().toString(36).substr(2, 9);
+        
+        Object.defineProperty(window, 'Katrin', {
+            get: function() {
+                isAdmin = true;
+                updateAdminUI();
+                console.log('✅ Админ-режим активирован!');
+                return 'Админ-режим активирован!';
+            },
+            set: function(val) {},
+            configurable: true
+        });
+
+        function updateAdminUI() {
+            const topicBtn = document.getElementById('topicAddBtn');
+            if (topicBtn) {
+                topicBtn.style.display = isAdmin ? 'flex' : 'none';
+            }
+            if (currentTab === 'chat') {
+                renderChat();
+            } else {
+                renderContent();
+                renderReference();
+            }
+        }
+
+        // Данные
+        let data = { 
+            vastu: { sections: {} }, 
+            astrology: { sections: {} }, 
+            esoteric: { sections: {} } 
+        };
+        let publications = [];
+        let chatMessages = [];
+        
+        let currentTab = 'vastu';
+        let currentFilter = null;
+        let selectedSectionId = null;
+        let selectedTopicId = null;
+        let uploadedImages = [];
+        let uploadedRefImages = [];
+        let uploadedChatImages = [];
+        let editingPubId = null;
+        let editingBlockIndex = null;
+        let editingTopicId = null;
+        let scrollToTopicId = null;
+        let currentCategory = 'vastu';
+
+        window.checkWordLength = function(input, maxLen) {
+            const warning = document.getElementById(input.id + 'CharWarning');
+            if (!warning) return;
+            const words = input.value.split(/\s+/);
+            warning.classList.toggle('show', words.some(w => w.length > maxLen));
+        };
+
+        function getCategoryName(cat) {
+            return { vastu: 'Васту', astrology: 'Астрология', esoteric: 'Эзотерика', chat: 'Чат' }[cat] || cat;
+        }
+
+        function getTopicIdsInSection(sectionId) {
+            const sec = data[currentCategory].sections[sectionId];
+            if (!sec) return [];
+            return Object.keys(sec.topics);
+        }
+
+        window.switchTab = function(tab, el) {
+            currentTab = tab;
+            currentFilter = null;
+            editingPubId = null;
+            editingBlockIndex = null;
+            scrollToTopicId = null;
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
+
+            const mainWrap = document.getElementById('mainContentWrap');
+            const chatWrap = document.getElementById('chatWrap');
+            const addButtons = document.getElementById('addButtons');
+
+            if (tab === 'chat') {
+                mainWrap.style.display = 'none';
+                chatWrap.style.display = 'block';
+                addButtons.style.display = 'none';
+                loadChatFromSupabase();
+            } else {
+                mainWrap.style.display = 'block';
+                chatWrap.style.display = 'none';
+                addButtons.style.display = 'flex';
+                document.getElementById('title').textContent = getCategoryName(tab);
+                document.getElementById('subtitle').textContent = { 
+                    vastu: 'Гармония пространства', 
+                    astrology: 'Влияние звёзд и планет', 
+                    esoteric: 'Скрытые знания' 
+                }[tab];
+                currentCategory = tab;
+                loadDataFromSupabase();
+            }
+        };
+
+        function scrollToTopic(tid) {
+            setTimeout(() => {
+                const el = document.getElementById('topic-' + tid);
+                if (el) {
+                    const headerHeight = 56;
+                    const elementPosition = el.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - headerHeight;
+                    window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+                }
+            }, 150);
+        }
+
+        async function loadDataFromSupabase() {
+            try {
+                const { data: refData } = await supabase.from('reference').select('*').eq('id', 1).single();
+                if (refData && refData.data) {
+                    data = refData.data;
+                } else if (Object.keys(data.vastu.sections).length === 0) {
+                    initDemoData();
+                    await saveDataToSupabase();
+                }
+                
+                const { data: pubs } = await supabase.from('publications').select('*').order('date', { ascending: false });
+                if (pubs) publications = pubs;
+            } catch(e) {
+                console.log('Загрузка из localStorage (ошибка Supabase)');
+                loadFromLocalStorage();
+            }
+            
+            renderContent();
+            renderReference();
+        }
+
+        async function loadChatFromSupabase() {
+            try {
+                const { data: chat } = await supabase.from('chat').select('*').order('timestamp', { ascending: true });
+                if (chat) chatMessages = chat;
+            } catch(e) {
+                console.log('Чат из localStorage');
+                const savedChat = localStorage.getItem('sp_chat_v4');
+                if (savedChat) { try { chatMessages = JSON.parse(savedChat); } catch(e) {} }
+            }
+            renderChat();
+        }
+
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('sp_data_v4');
+            if (saved) { try { data = JSON.parse(saved); } catch(e) {} }
+            if (Object.keys(data.vastu.sections).length === 0) initDemoData();
+            
+            const savedPubs = localStorage.getItem('sp_pubs_v4');
+            if (savedPubs) { try { publications = JSON.parse(savedPubs); } catch(e) {} }
+        }
+
+        async function saveDataToSupabase() {
+            localStorage.setItem('sp_data_v4', JSON.stringify(data));
+            try {
+                await supabase.from('reference').upsert({ id: 1, data: data });
+            } catch(e) {
+                console.log('Сохранено только в localStorage');
+            }
+        }
+
+        async function savePublicationsToSupabase() {
+            localStorage.setItem('sp_pubs_v4', JSON.stringify(publications));
+            try {
+                await supabase.from('publications').delete().neq('id', '0');
+                if (publications.length > 0) {
+                    await supabase.from('publications').insert(publications);
+                }
+            } catch(e) {
+                console.log('Публикации сохранены в localStorage');
+            }
+        }
+
+        async function saveChatToSupabase() {
+            localStorage.setItem('sp_chat_v4', JSON.stringify(chatMessages));
+            try {
+                const msg = chatMessages[chatMessages.length - 1];
+                if (msg) await supabase.from('chat').insert([msg]);
+            } catch(e) {
+                console.log('Чат сохранен в localStorage');
+            }
+        }
+
+        function initDemoData() {
+            const s1 = generateId();
+            data.vastu.sections[s1] = { 
+                name: 'Основы', 
+                topics: {
+                    [generateId()]: { name: 'Направления', blocks: [{ title: '', text: 'Север — зона карьеры.\nВосток — зона здоровья.\nЮг — зона славы.\nЗапад — зона творчества.', images: [] }] },
+                    [generateId()]: { name: 'Правила дома', blocks: [{ title: 'Расположение', text: 'Главный вход на севере или востоке.\nКухня на юго-востоке.\nСпальня на юго-западе.', images: [] }] },
+                    [generateId()]: { name: 'Энергетика', blocks: [{ title: '', text: 'Чистота пространства.\nПравильное освещение.\nЖивые растения.', images: [] }] },
+                    [generateId()]: { name: 'Цвета', blocks: [{ title: 'Значение', text: 'Белый — чистота.\nЖёлтый — богатство.\nЗелёный — здоровье.', images: [] }] }
+                }
+            };
+            data.astrology.sections[generateId()] = { 
+                name: 'Планеты', 
+                topics: {
+                    [generateId()]: { name: 'Меркурий', blocks: [{ title: '', text: 'Меркурий — планета ума.\nВ ретроградный период будьте внимательны.', images: [] }] }
+                }
+            };
+            data.esoteric.sections[generateId()] = { 
+                name: 'Практики', 
+                topics: {
+                    [generateId()]: { name: 'Медитация', blocks: [{ title: 'Техника', text: '10 минут в день.\nНаблюдайте за дыханием.', images: [] }] }
+                }
+            };
+        }
+
+        function generateId() { 
+            return Date.now().toString(36) + Math.random().toString(36).substr(2, 6); 
+        }
+
+        function renderContent() {
+            const contentArea = document.getElementById('contentArea');
+            const breadcrumb = document.getElementById('breadcrumb');
+            const backArrow = document.getElementById('backArrow');
+            const catName = getCategoryName(currentCategory);
+
+            if (currentFilter && currentFilter.sectionId) {
+                backArrow.classList.add('show');
+                const sec = data[currentCategory]?.sections[currentFilter.sectionId];
+                breadcrumb.innerHTML = `${catName} <span class="sep">/</span> <span>${sec?.name || ''}</span>`;
+                
+                if (sec && Object.keys(sec.topics).length > 0) {
+                    let html = '<div class="topics-wrapper">';
+                    
+                    for (let tid in sec.topics) {
+                        const topic = sec.topics[tid];
+                        html += `<div class="topic-section-block" id="topic-${tid}">`;
+                        html += `<div class="topic-name-header">${topic.name}</div>`;
+                        
+                        if (topic.blocks && topic.blocks.length > 0) {
+                            topic.blocks.forEach((block, i) => {
+                                html += `<div class="topic-block">`;
+                                if (editingBlockIndex === i && editingTopicId === tid && isAdmin) {
+                                    html += `<input type="text" id="editBlockTitle-${i}" value="${escapeAttr(block.title || '')}" placeholder="Заголовок" style="width:100%;padding:8px;margin-bottom:8px;border:1px solid #d0d0d0;border-radius:6px;font-size:16px;font-weight:600;">`;
+                                    html += `<textarea id="editBlockText-${i}" style="width:100%;min-height:80px;padding:8px;border:1px solid #d0d0d0;border-radius:6px;font-size:14px;">${escapeHtml(block.text || '')}</textarea>`;
+                                    html += `<div class="edit-actions"><button class="edit-save" onclick="saveBlockEdit('${tid}', ${i})">Сохранить</button><button class="edit-cancel" onclick="cancelBlockEdit()">Отмена</button></div>`;
+                                } else {
+                                    if (block.title) html += `<div class="topic-subtitle">${escapeHtml(block.title)}</div>`;
+                                    if (block.text) html += `<div class="topic-text-block">${escapeHtml(block.text)}</div>`;
+                                    if (block.images && block.images.length > 0) {
+                                        const imgClass = `img-${Math.min(block.images.length, 3)}`;
+                                        html += `<div class="topic-images ${imgClass}">`;
+                                        block.images.forEach(img => html += `<img src="${img}" onclick="viewImage('${img}')" loading="lazy">`);
+                                        html += '</div>';
+                                    }
+                                    if (isAdmin) {
+                                        html += `<div class="block-actions">
+                                            <button class="block-action-btn" onclick="editBlock('${tid}', ${i})">Изменить</button>
+                                            <button class="block-action-btn delete-block" onclick="deleteBlock('${tid}', ${i})">Удалить</button>
+                                        </div>`;
+                                    }
+                                }
+                                html += '</div>';
+                            });
+                        }
+                        html += '</div>';
+                    }
+                    html += '</div>';
+                    contentArea.innerHTML = html;
+                    
+                    if (scrollToTopicId) {
+                        scrollToTopic(scrollToTopicId);
+                        scrollToTopicId = null;
+                    }
+                } else {
+                    contentArea.innerHTML = '<div class="empty-state">В этом разделе пока нет тем</div>';
+                }
+            } else {
+                backArrow.classList.remove('show');
+                breadcrumb.innerHTML = catName;
+                renderFeed();
+            }
+        }
+
+        window.editBlock = function(tid, index) {
+            if (!isAdmin) return;
+            editingTopicId = tid;
+            editingBlockIndex = index;
+            renderContent();
+        };
+
+        window.cancelBlockEdit = function() {
+            editingBlockIndex = null;
+            editingTopicId = null;
+            renderContent();
+        };
+
+        window.saveBlockEdit = function(tid, index) {
+            if (!isAdmin) return;
+            const titleEl = document.getElementById('editBlockTitle-' + index);
+            const textEl = document.getElementById('editBlockText-' + index);
+            if (!titleEl || !textEl) return;
+            const sec = data[currentCategory]?.sections[currentFilter.sectionId];
+            const topic = sec?.topics[tid];
+            if (topic && topic.blocks && topic.blocks[index]) {
+                topic.blocks[index].title = titleEl.value.trim();
+                topic.blocks[index].text = textEl.value.trim();
+                saveDataToSupabase();
+            }
+            editingBlockIndex = null;
+            editingTopicId = null;
+            renderContent();
+        };
+
+        window.deleteBlock = function(tid, index) {
+            if (!isAdmin) return;
+            if (!confirm('Удалить этот блок?')) return;
+            const sec = data[currentCategory]?.sections[currentFilter.sectionId];
+            const topic = sec?.topics[tid];
+            if (topic && topic.blocks) {
+                topic.blocks.splice(index, 1);
+                saveDataToSupabase();
+                renderContent();
+                renderReference();
+            }
+        };
+
+        function renderFeed() {
+            const contentArea = document.getElementById('contentArea');
+            let filteredPubs = publications.filter(p => p.category === currentCategory);
+            if (filteredPubs.length === 0) { 
+                contentArea.innerHTML = '<div class="empty-state">Нет публикаций</div>'; 
+                return; 
+            }
+            contentArea.innerHTML = `<div class="feed-list">${filteredPubs.map(p => {
+                const imgCount = (p.images || []).length;
+                const imgClass = imgCount > 0 ? `img-${Math.min(imgCount, 8)}` : '';
+                const isEditing = editingPubId === p.id && isAdmin;
+                return `<div class="publication-card">
+                    ${p.title ? `<div class="pub-header"><div class="pub-title">${escapeHtml(p.title)}</div></div>` : ''}
+                    <div class="pub-header" style="padding-top:${p.title ? '4px' : '16px'}">
+                        ${isEditing ? `<textarea class="edit-textarea" id="editText-${p.id}">${escapeHtml(p.text)}</textarea>
+                        <div class="edit-actions"><button class="edit-save" onclick="saveEdit('${p.id}')">Сохранить</button><button class="edit-cancel" onclick="cancelEdit()">Отмена</button></div>`
+                        : (p.text ? `<div class="pub-text">${escapeHtml(p.text)}</div>` : '')}
+                    </div>
+                    ${imgCount > 0 ? `<div class="pub-images ${imgClass}">${(p.images||[]).map(img => `<img src="${img}" class="pub-img" onclick="event.stopPropagation(); viewImage('${img}')" loading="lazy">`).join('')}</div>` : ''}
+                    <div class="pub-footer"><span>${p.date||''}</span>${isAdmin ? `<div class="pub-actions"><button class="pub-action-btn" onclick="startEdit('${p.id}')">Изменить</button><button class="pub-action-btn delete" onclick="deletePublication('${p.id}')">Удалить</button></div>` : ''}</div>
+                </div>`;
+            }).join('')}</div>`;
+        }
+
+        function renderChat() {
+            const container = document.getElementById('chatMessages');
+            if (!chatMessages || chatMessages.length === 0) {
+                container.innerHTML = '<div class="empty-state" style="margin:20px;">Нет сообщений</div>';
+                return;
+            }
+            container.innerHTML = chatMessages.map(m => {
+                const isOwn = m.userId === currentUserId;
+                const isDeleted = m.deleted;
+                const imgCount = (m.images || []).length;
+                const imgClass = imgCount > 0 ? `img-${Math.min(imgCount, 8)}` : '';
+                
+                let bubbleContent = '';
+                if (isDeleted) {
+                    bubbleContent = m.deletedBy === 'admin' && m.userId !== 'admin' ? 
+                        '<i>Администратор удалил сообщение пользователя</i>' : 
+                        '<i>Пользователь удалил своё сообщение</i>';
+                } else {
+                    bubbleContent = escapeHtml(m.text || '');
+                    if (imgCount > 0) {
+                        bubbleContent += `<div class="chat-images ${imgClass}">${(m.images||[]).map(img => `<img src="${img}" onclick="viewImage('${img}')" loading="lazy">`).join('')}</div>`;
+                    }
+                }
+                
+                let actionsHtml = '';
+                if (!isDeleted) {
+                    if (isOwn || isAdmin) {
+                        actionsHtml = `<div class="chat-message-actions">
+                            ${isOwn ? '<button class="chat-action-btn" onclick="editChatMessage(\'' + m.id + '\')">Изменить</button>' : ''}
+                            <button class="chat-action-btn delete-btn" onclick="deleteChatMessage(\'' + m.id + '\')">Удалить</button>
+                        </div>`;
+                    }
+                }
+                
+                const metaHtml = m.edited && !isDeleted ? '<span class="edited">изменено</span>' : '';
+                
+                return `<div class="chat-message ${isOwn ? 'own' : ''} ${isDeleted ? 'deleted' : ''}">
+                    <div class="chat-avatar ${isOwn ? 'own-avatar' : ''}">${isOwn ? 'Я' : (m.userName || 'Г')}</div>
+                    <div class="chat-bubble-wrapper">
+                        <div class="chat-bubble">${bubbleContent}</div>
+                        ${metaHtml ? `<div class="chat-meta">${metaHtml}</div>` : ''}
+                    </div>
+                    ${actionsHtml}
+                </div>`;
+            }).join('');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        window.editChatMessage = function(msgId) {
+            const msg = chatMessages.find(m => m.id === msgId);
+            if (!msg) return;
+            const newText = prompt('Изменить сообщение:', msg.text);
+            if (newText !== null && newText.trim() !== '') {
+                msg.text = newText.trim();
+                msg.edited = true;
+                saveChatToSupabase();
+                renderChat();
+            }
+        };
+
+        window.deleteChatMessage = function(msgId) {
+            const msg = chatMessages.find(m => m.id === msgId);
+            if (!msg) return;
+            if (!confirm('Удалить сообщение?')) return;
+            
+            msg.deleted = true;
+            msg.deletedBy = isAdmin && msg.userId !== currentUserId ? 'admin' : 'user';
+            saveChatToSupabase();
+            renderChat();
+        };
+
+        window.handleChatImages = function(event) {
+            const files = Array.from(event.target.files);
+            const toAdd = files.slice(0, 8 - uploadedChatImages.length);
+            toAdd.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) { 
+                    uploadedChatImages.push(e.target.result); 
+                    renderChatImagePreview(); 
+                };
+                reader.readAsDataURL(file);
+            });
+            event.target.value = '';
+        };
+
+        function renderChatImagePreview() {
+            const container = document.getElementById('chatImagePreview');
+            container.innerHTML = uploadedChatImages.map((img, i) => `
+                <div class="preview-item"><img src="${img}"><button class="remove-img" onclick="removeChatImage(${i})">&times;</button></div>
+            `).join('');
+        }
+
+        window.removeChatImage = function(i) { 
+            uploadedChatImages.splice(i, 1); 
+            renderChatImagePreview(); 
+        };
+        
+        window.sendChatMessage = function() {
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (!text && uploadedChatImages.length === 0) return;
+            
+            const msg = { 
+                id: generateId(),
+                text, 
+                images: [...uploadedChatImages], 
+                userId: currentUserId,
+                userName: 'Гость',
+                timestamp: Date.now(),
+                edited: false,
+                deleted: false
+            };
+            
+            chatMessages.push(msg);
+            saveChatToSupabase();
+            input.value = '';
+            uploadedChatImages = [];
+            renderChatImagePreview();
+            renderChat();
+        };
+
+        window.startEdit = function(id) { if (!isAdmin) return; editingPubId = id; renderFeed(); };
+        window.cancelEdit = function() { editingPubId = null; renderFeed(); };
+        window.saveEdit = function(id) {
+            if (!isAdmin) return;
+            const ta = document.getElementById('editText-' + id); 
+            if (!ta) return;
+            const pub = publications.find(p => p.id === id); 
+            if (pub) { 
+                pub.text = ta.value.trim(); 
+                savePublicationsToSupabase(); 
+            }
+            editingPubId = null; 
+            renderFeed();
+        };
+        window.deletePublication = function(id) { 
+            if (!isAdmin) return; 
+            if (confirm('Удалить?')) { 
+                publications = publications.filter(p => p.id !== id); 
+                savePublicationsToSupabase(); 
+                renderFeed(); 
+            } 
+        };
+        window.goBackToFeed = function() { 
+            currentFilter = null; 
+            editingBlockIndex = null; 
+            editingTopicId = null; 
+            scrollToTopicId = null; 
+            renderContent(); 
+            renderReference(); 
+            window.scrollTo({ top: 0, behavior: 'smooth' }); 
+        };
+
+        window.toggleReference = function() {
+            const dropdown = document.getElementById('refDropdown');
+            const btn = document.getElementById('refBtn');
+            if (dropdown.classList.contains('show')) { 
+                dropdown.classList.remove('show'); 
+                btn.classList.remove('active'); 
+            } else { 
+                renderReference(); 
+                dropdown.classList.add('show'); 
+                btn.classList.add('active'); 
+            }
+        };
+
+        function renderReference() {
+            const container = document.getElementById('refDropdown');
+            const cat = data[currentCategory];
+            if (!cat || !cat.sections) {
+                container.innerHTML = '<div class="ref-empty">Нет разделов</div>';
+                return;
+            }
+            let html = '';
+            for (let sid in cat.sections) {
+                const sec = cat.sections[sid];
+                const isOpen = currentFilter && currentFilter.sectionId === sid;
+                html += `<div class="ref-section">
+                    <div class="ref-section-title ${isOpen?'open':''}" onclick="event.stopPropagation(); toggleRefSection(this,'${sid}')">${sec.name} <span class="arrow">▶</span></div>
+                    <div class="ref-topics ${isOpen?'show':''}" id="refTopics-${sid}">
+                        ${Object.entries(sec.topics).map(([tid,topic]) => `<div class="ref-topic ${currentFilter&&currentFilter.topicId===tid?'active-topic':''}" onclick="event.stopPropagation(); selectTopic('${sid}','${tid}')">${topic.name}</div>`).join('')}
+                    </div>
+                </div>`;
+            }
+            if (Object.keys(cat.sections).length === 0) html = '<div class="ref-empty">Нет разделов</div>';
+            container.innerHTML = html;
+        }
+
+        window.toggleRefSection = function(el, sid) { 
+            el.classList.toggle('open'); 
+            document.getElementById('refTopics-' + sid).classList.toggle('show'); 
+        };
+        
+        window.selectTopic = function(sid, tid) { 
+            currentFilter = { sectionId: sid, topicId: tid }; 
+            editingPubId = null; 
+            editingBlockIndex = null;
+            editingTopicId = null;
+            scrollToTopicId = tid;
+            renderContent(); 
+            renderReference(); 
+            closeReference(); 
+        };
+        
+        window.selectSection = function(sid) { 
+            currentFilter = { sectionId: sid, topicId: null }; 
+            editingPubId = null; 
+            editingBlockIndex = null;
+            editingTopicId = null;
+            scrollToTopicId = null;
+            renderContent(); 
+            renderReference(); 
+            closeReference(); 
+            window.scrollTo({ top: 0, behavior: 'smooth' }); 
+        };
+        
+        function closeReference() { 
+            document.getElementById('refDropdown').classList.remove('show'); 
+            document.getElementById('refBtn').classList.remove('active'); 
+        }
+        
+        document.addEventListener('click', function(e) { 
+            const rw = document.querySelector('.ref-wrapper'); 
+            if (rw && !rw.contains(e.target)) closeReference(); 
+        });
+
+        // Форма справочника
+        window.openForm = function() {
+            if (!isAdmin) return;
+            selectedSectionId = null; 
+            selectedTopicId = null; 
+            uploadedRefImages = [];
+            document.getElementById('sectionBtn').textContent = 'Выберите раздел';
+            document.getElementById('topicBtn').textContent = 'Выберите тему';
+            document.getElementById('refTitle').value = '';
+            document.getElementById('postText').value = '';
+            document.getElementById('sectionCreateInput').style.display = 'none';
+            document.getElementById('topicCreateInput').style.display = 'none';
+            document.getElementById('formOverlay').classList.add('show');
+            renderRefImagePreview(); 
+            closeAllSelects(); 
+            hideAllWarnings();
+        };
+        
+        window.closeForm = function() { 
+            document.getElementById('formOverlay').classList.remove('show'); 
+            closeAllSelects(); 
+            hideAllWarnings(); 
+        };
+        
+        function hideAllWarnings() { 
+            document.querySelectorAll('.char-warning').forEach(w => w.classList.remove('show')); 
+        }
+        
+        document.getElementById('formOverlay').addEventListener('click', function(e) { 
+            if (e.target === this) closeForm(); 
+        });
+
+        window.toggleSectionSelect = function() {
+            closeSelect('topicSelect');
+            const select = document.getElementById('sectionSelect');
+            let html = '';
+            const cat = data[currentCategory];
+            if (cat && cat.sections) {
+                for (let sid in cat.sections) {
+                    html += `<div class="option" onclick="pickSection('${sid}','${escapeAttr(cat.sections[sid].name)}')">${cat.sections[sid].name}</div>`;
+                }
+            }
+            if (html === '') html = '<div class="no-option">Нет разделов</div>';
+            select.innerHTML = html; 
+            select.classList.toggle('show');
+        };
+        
+        window.pickSection = function(sid, name) { 
+            selectedSectionId = sid; 
+            selectedTopicId = null; 
+            document.getElementById('sectionBtn').textContent = name; 
+            document.getElementById('topicBtn').textContent = 'Выберите тему'; 
+            closeSelect('sectionSelect'); 
+            updateTopicSelect(); 
+        };
+        
+        window.toggleTopicSelect = function() { 
+            if (!selectedSectionId) { 
+                alert('Сначала выберите раздел'); 
+                return; 
+            } 
+            closeSelect('sectionSelect'); 
+            document.getElementById('topicSelect').classList.toggle('show'); 
+            updateTopicSelect(); 
+        };
+        
+        function updateTopicSelect() {
+            const select = document.getElementById('topicSelect');
+            if (!selectedSectionId) { 
+                select.innerHTML = '<div class="no-option">Сначала выберите раздел</div>'; 
+                return; 
+            }
+            const sec = data[currentCategory]?.sections[selectedSectionId];
+            if (!sec) { 
+                select.innerHTML = '<div class="no-option">Раздел не найден</div>'; 
+                return; 
+            }
+            let html = '';
+            for (let tid in sec.topics) {
+                html += `<div class="option" onclick="pickTopic('${tid}','${escapeAttr(sec.topics[tid].name)}')">${sec.topics[tid].name}</div>`;
+            }
+            if (html === '') html = '<div class="no-option">Нет тем</div>';
+            select.innerHTML = html;
+        }
+        
+        window.pickTopic = function(tid, name) { 
+            selectedTopicId = tid; 
+            document.getElementById('topicBtn').textContent = name; 
+            closeSelect('topicSelect'); 
+        };
+        
+        window.showCreateInput = function(type) {
+            if (type === 'section') { 
+                document.getElementById('sectionCreateInput').style.display = 'block'; 
+                document.getElementById('newSectionName').value = ''; 
+                document.getElementById('newSectionName').focus(); 
+                closeAllSelects(); 
+            } else { 
+                if (!selectedSectionId) { 
+                    alert('Сначала выберите раздел'); 
+                    return; 
+                } 
+                document.getElementById('topicCreateInput').style.display = 'block'; 
+                document.getElementById('newTopicName').value = ''; 
+                document.getElementById('newTopicName').focus(); 
+                closeAllSelects(); 
+            }
+        };
+        
+        window.createSection = function() {
+            const name = document.getElementById('newSectionName').value.trim(); 
+            if (!name) return;
+            if (name.split(/\s+/).some(w => w.length > 30)) { 
+                alert('Слово слишком длинное!'); 
+                return; 
+            }
+            const sid = generateId(); 
+            if (!data[currentCategory]) data[currentCategory] = { sections: {} };
+            data[currentCategory].sections[sid] = { name, topics: {} }; 
+            saveDataToSupabase();
+            selectedSectionId = sid; 
+            selectedTopicId = null;
+            document.getElementById('sectionBtn').textContent = name; 
+            document.getElementById('topicBtn').textContent = 'Выберите тему';
+            document.getElementById('sectionCreateInput').style.display = 'none'; 
+            updateTopicSelect();
+        };
+        
+        window.createTopic = function() {
+            const name = document.getElementById('newTopicName').value.trim(); 
+            if (!name || !selectedSectionId) return;
+            if (name.split(/\s+/).some(w => w.length > 30)) { 
+                alert('Слово слишком длинное!'); 
+                return; 
+            }
+            const tid = generateId(); 
+            const sec = data[currentCategory]?.sections[selectedSectionId];
+            if (!sec) return;
+            sec.topics[tid] = { name, blocks: [] }; 
+            saveDataToSupabase();
+            selectedTopicId = tid; 
+            document.getElementById('topicBtn').textContent = name;
+            document.getElementById('topicCreateInput').style.display = 'none'; 
+            updateTopicSelect();
+        };
+        
+        window.handleRefImages = function(event) {
+            const files = Array.from(event.target.files);
+            const toAdd = files.slice(0, 3 - uploadedRefImages.length);
+            toAdd.forEach(file => { 
+                const r = new FileReader(); 
+                r.onload = e => { 
+                    uploadedRefImages.push(e.target.result); 
+                    renderRefImagePreview(); 
+                }; 
+                r.readAsDataURL(file); 
+            });
+            event.target.value = '';
+        };
+        
+        function renderRefImagePreview() {
+            const c = document.getElementById('refImagePreview');
+            c.innerHTML = uploadedRefImages.map((img,i) => 
+                `<div class="preview-item"><img src="${img}"><button class="remove-img" onclick="removeRefImage(${i})">&times;</button></div>`
+            ).join('');
+        }
+        
+        window.removeRefImage = function(i) { 
+            uploadedRefImages.splice(i,1); 
+            renderRefImagePreview(); 
+        };
+        
+        window.submitPost = function() {
+            if (!isAdmin) return;
+            const title = document.getElementById('refTitle').value.trim();
+            const text = document.getElementById('postText').value.trim();
+            if (!text && uploadedRefImages.length === 0) { 
+                alert('Введите текст или добавьте картинки'); 
+                return; 
+            }
+            if (!selectedSectionId || !selectedTopicId) { 
+                alert('Выберите раздел и тему'); 
+                return; 
+            }
+            if ((title+' '+text).split(/\s+/).some(w => w.length > 50)) { 
+                alert('Слово слишком длинное!'); 
+                return; 
+            }
+            const sec = data[currentCategory]?.sections[selectedSectionId];
+            if (!sec?.topics[selectedTopicId]) return;
+            if (!sec.topics[selectedTopicId].blocks) sec.topics[selectedTopicId].blocks = [];
+            sec.topics[selectedTopicId].blocks.push({ title, text, images: [...uploadedRefImages] });
+            saveDataToSupabase();
+            document.getElementById('refTitle').value = ''; 
+            document.getElementById('postText').value = ''; 
+            uploadedRefImages = []; 
+            renderRefImagePreview();
+            closeForm();
+            if (currentFilter?.sectionId === selectedSectionId) {
+                scrollToTopicId = selectedTopicId;
+                renderContent();
+            }
+            renderReference();
+        };
+
+        // Форма публикации
+        window.openPublishForm = function() {
+            document.getElementById('pubTitle').value = ''; 
+            document.getElementById('pubText').value = ''; 
+            uploadedImages = [];
+            renderImagePreview(); 
+            document.getElementById('publishOverlay').classList.add('show'); 
+            hideAllWarnings();
+        };
+        
+        window.closePublishForm = function() { 
+            document.getElementById('publishOverlay').classList.remove('show'); 
+            hideAllWarnings(); 
+        };
+        
+        document.getElementById('publishOverlay').addEventListener('click', function(e) { 
+            if (e.target === this) closePublishForm(); 
+        });
+        
+        window.handleImages = function(event) {
+            const files = Array.from(event.target.files);
+            const toAdd = files.slice(0, 8 - uploadedImages.length);
+            toAdd.forEach(file => { 
+                const r = new FileReader(); 
+                r.onload = e => { 
+                    uploadedImages.push(e.target.result); 
+                    renderImagePreview(); 
+                }; 
+                r.readAsDataURL(file); 
+            });
+            event.target.value = '';
+        };
+        
+        function renderImagePreview() {
+            const c = document.getElementById('imagePreview');
+            c.innerHTML = uploadedImages.map((img,i) => 
+                `<div class="preview-item"><img src="${img}"><button class="remove-img" onclick="removeImage(${i})">&times;</button></div>`
+            ).join('');
+        }
+        
+        window.removeImage = function(i) { 
+            uploadedImages.splice(i,1); 
+            renderImagePreview(); 
+        };
+        
+        window.submitPublication = function() {
+            const title = document.getElementById('pubTitle').value.trim();
+            const text = document.getElementById('pubText').value.trim();
+            if (!title && !text && uploadedImages.length === 0) { 
+                alert('Добавьте заголовок, текст или картинки'); 
+                return; 
+            }
+            if ((title+' '+text).split(/\s+/).some(w => w.length > 50)) { 
+                alert('Слово слишком длинное!'); 
+                return; 
+            }
+            publications.unshift({ 
+                id: generateId(), 
+                category: currentCategory, 
+                title, 
+                text, 
+                images: [...uploadedImages], 
+                date: new Date().toISOString().split('T')[0] 
+            });
+            savePublicationsToSupabase();
+            document.getElementById('pubTitle').value = ''; 
+            document.getElementById('pubText').value = ''; 
+            uploadedImages = []; 
+            renderImagePreview();
+            closePublishForm();
+            if (!currentFilter) renderFeed();
+        };
+
+        window.viewImage = function(src) { 
+            document.getElementById('viewerImage').src = src; 
+            document.getElementById('imageViewer').classList.add('show'); 
+        };
+        
+        window.closeImageViewer = function() { 
+            document.getElementById('imageViewer').classList.remove('show'); 
+        };
+
+        function closeAllSelects() { 
+            closeSelect('sectionSelect'); 
+            closeSelect('topicSelect'); 
+        }
+        
+        function closeSelect(id) { 
+            const el = document.getElementById(id);
+            if (el) el.classList.remove('show'); 
+        }
+        
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('#sectionRow')) closeSelect('sectionSelect');
+            if (!e.target.closest('#topicRow')) closeSelect('topicSelect');
+        });
+
+        function escapeHtml(text) { 
+            if (!text) return ''; 
+            const d = document.createElement('div'); 
+            d.textContent = text; 
+            return d.innerHTML; 
+        }
+        
+        function escapeAttr(text) { 
+            if (!text) return ''; 
+            return text.replace(/'/g,"\\'").replace(/"/g,'\\"'); 
+        }
+
+        // Запуск приложения
+        loadDataFromSupabase();
+        updateAdminUI();
+        renderContent();
+        renderReference();
+        renderChat();
+    </script>
+</body>
+</html>
