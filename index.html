@@ -52,7 +52,7 @@
         .pub-title { font-size: 20px; font-weight: 700; color: #1a1a1a; margin-bottom: 8px; line-height: 1.3; word-wrap: break-word; overflow-wrap: break-word; }
         .pub-text { font-size: 15px; color: #444; line-height: 1.6; margin-bottom: 12px; word-wrap: break-word; overflow-wrap: break-word; }
         
-        /* Фото в публикациях - без скруглений, слитые */
+        /* Фото в публикациях - отступ 1px */
         .pub-images { display: grid; gap: 1px; }
         .pub-images.img-1 { grid-template-columns: 1fr; }
         .pub-images.img-2 { grid-template-columns: 1fr 1fr; }
@@ -62,7 +62,7 @@
         .pub-images.img-6,
         .pub-images.img-7,
         .pub-images.img-8 { grid-template-columns: 1fr 1fr 1fr; }
-        .pub-img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; transition: 0.2s; aspect-ratio: 1; max-width: 236px; max-height: 236px; border-radius: 0; }
+        .pub-img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; transition: 0.2s; aspect-ratio: 1; max-width: 236px; max-height: 140px; border-radius: 0; }
         .pub-img:hover { opacity: 0.9; }
         
         .pub-footer { padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #999; }
@@ -94,12 +94,12 @@
         .topic-subtitle { font-size: 18px; font-weight: 600; color: #1a1a1a; margin-bottom: 8px; }
         .topic-text-block { white-space: pre-wrap; margin-bottom: 8px; font-size: 15px; color: #444; line-height: 1.7; padding: 0; }
         
-        /* Фото в справочнике - как в публикациях, без скруглений, слитые */
+        /* Фото в справочнике - отступ 1px */
         .topic-images { display: grid; gap: 1px; margin: 8px 0; width: 100%; }
         .topic-images.img-1 { grid-template-columns: 1fr; }
         .topic-images.img-2 { grid-template-columns: 1fr 1fr; }
         .topic-images.img-3 { grid-template-columns: 1fr 1fr 1fr; }
-        .topic-images img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; aspect-ratio: 1; max-width: 236px; max-height: 236px; border-radius: 0; }
+        .topic-images img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; aspect-ratio: 1; max-width: 236px; max-height: 140px; border-radius: 0; }
         
         .block-actions { display: flex; gap: 8px; margin-top: 8px; }
         .block-action-btn { background: none; border: none; font-size: 11px; cursor: pointer; color: #999; padding: 3px 8px; border-radius: 4px; transition: 0.15s; }
@@ -129,7 +129,7 @@
         .chat-images.img-7,
         .chat-images.img-8,
         .chat-images.img-9 { grid-template-columns: 1fr 1fr 1fr; }
-        .chat-images img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; aspect-ratio: 1; max-width: 236px; max-height: 236px; border-radius: 0; }
+        .chat-images img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; aspect-ratio: 1; max-width: 236px; max-height: 140px; border-radius: 0; }
         
         .chat-meta { font-size: 11px; color: #999; margin-top: 2px; padding: 0 4px; }
         .chat-meta .edited { color: #6c3fc0; font-style: italic; }
@@ -189,12 +189,15 @@
         .image-upload-area.purple-hover:hover { border-color: #6c3fc0; background: #f5f0ff; }
         .image-upload-area input { display: none; }
         .image-upload-area .upload-text { color: #999; font-size: 13px; }
+        
+        /* Маленькие превью с крестиками - отступ 5px */
         .image-preview { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 8px; }
         .image-preview .preview-item { position: relative; aspect-ratio: 1; border-radius: 6px; overflow: hidden; max-width: 50px; max-height: 50px; }
         .image-preview .preview-item img { width: 100%; height: 100%; object-fit: cover; }
         .image-preview .preview-item .remove-img { position: absolute; top: 1px; right: 1px; background: rgba(0,0,0,0.6); color: #fff; border: none; width: 16px; height: 16px; border-radius: 50%; cursor: pointer; font-size: 10px; display: flex; align-items: center; justify-content: center; }
         .image-preview.topic-preview { grid-template-columns: repeat(3, 1fr); }
         .image-preview.topic-preview .preview-item { max-width: 45px; max-height: 45px; }
+        
         .submit-btn { width: 100%; padding: 12px; color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; }
         .submit-btn.purple { background: #6c3fc0; }
         .submit-btn.purple:hover { background: #5b32a8; }
@@ -394,10 +397,10 @@
         }
 
         function loadFromLocalStorage() {
-            const saved = localStorage.getItem('sp_data_v7'); if (saved) { try { const parsed = JSON.parse(saved); if (parsed && parsed.vastu) data = parsed; } catch(e) {} }
+            const saved = localStorage.getItem('sp_data_v8'); if (saved) { try { const parsed = JSON.parse(saved); if (parsed && parsed.vastu) data = parsed; } catch(e) {} }
             if (Object.keys(data.vastu.sections).length === 0) initDemoData();
-            const savedPubs = localStorage.getItem('sp_pubs_v7'); if (savedPubs) { try { publications = JSON.parse(savedPubs); } catch(e) {} }
-            const savedChat = localStorage.getItem('sp_chat_v7'); if (savedChat) { try { chatMessages = JSON.parse(savedChat); } catch(e) {} }
+            const savedPubs = localStorage.getItem('sp_pubs_v8'); if (savedPubs) { try { publications = JSON.parse(savedPubs); } catch(e) {} }
+            const savedChat = localStorage.getItem('sp_chat_v8'); if (savedChat) { try { chatMessages = JSON.parse(savedChat); } catch(e) {} }
         }
 
         function stripImagesForLocal(obj) {
@@ -407,19 +410,19 @@
         }
 
         async function saveData() {
-            try { localStorage.setItem('sp_data_v7', JSON.stringify(stripImagesForLocal(data))); } catch(e) {}
+            try { localStorage.setItem('sp_data_v8', JSON.stringify(stripImagesForLocal(data))); } catch(e) {}
             if (supabaseClient) { try { await supabaseClient.from('reference').upsert({ id: 1, data: data }); } catch(e) {} }
         }
 
         async function savePublications() {
             const cleanPubs = publications.map(p => ({...p, images: []}));
-            try { localStorage.setItem('sp_pubs_v7', JSON.stringify(cleanPubs)); } catch(e) {}
+            try { localStorage.setItem('sp_pubs_v8', JSON.stringify(cleanPubs)); } catch(e) {}
             if (supabaseClient) { try { await supabaseClient.from('publications').delete().neq('id', '0'); if (publications.length > 0) { const chunkSize = 10; for (let i = 0; i < publications.length; i += chunkSize) { await supabaseClient.from('publications').insert(publications.slice(i, i + chunkSize)); } } } catch(e) {} }
         }
 
         async function saveChat() {
             const cleanChat = chatMessages.map(m => ({...m, images: []}));
-            try { localStorage.setItem('sp_chat_v7', JSON.stringify(cleanChat)); } catch(e) {}
+            try { localStorage.setItem('sp_chat_v8', JSON.stringify(cleanChat)); } catch(e) {}
             if (supabaseClient) { try { const msg = chatMessages[chatMessages.length - 1]; if (msg) await supabaseClient.from('chat').insert([msg]); } catch(e) {} }
         }
 
@@ -520,65 +523,17 @@
             } else { backArrow.classList.remove('show'); breadcrumb.innerHTML = catName; renderFeed(); }
         }
 
-        window.editSectionName = function(sid) {
-            if (!isAdmin) return;
-            const sec = data[currentCategory].sections[sid]; if (!sec) return;
-            const newName = prompt('Новое название раздела:', sec.name);
-            if (newName && newName.trim()) { sec.name = newName.trim(); saveData(); renderContent(); renderReference(); }
-        };
-        window.deleteSection = function(sid) {
-            if (!isAdmin) return;
-            const sec = data[currentCategory].sections[sid]; if (!sec) return;
-            const nameToConfirm = prompt(`Для удаления раздела "${sec.name}" введите его название:`);
-            if (nameToConfirm === sec.name) { if (confirm(`Вы уверены? Раздел "${sec.name}" и всё его содержимое будет удалено.`)) { delete data[currentCategory].sections[sid]; saveData(); currentFilter = null; renderContent(); renderReference(); } }
-            else if (nameToConfirm !== null) { alert('Название не совпадает!'); }
-        };
+        window.editSectionName = function(sid) { if (!isAdmin) return; const sec = data[currentCategory].sections[sid]; if (!sec) return; const newName = prompt('Новое название раздела:', sec.name); if (newName && newName.trim()) { sec.name = newName.trim(); saveData(); renderContent(); renderReference(); } };
+        window.deleteSection = function(sid) { if (!isAdmin) return; const sec = data[currentCategory].sections[sid]; if (!sec) return; const nameToConfirm = prompt(`Для удаления раздела "${sec.name}" введите его название:`); if (nameToConfirm === sec.name) { if (confirm(`Вы уверены? Раздел "${sec.name}" и всё его содержимое будет удалено.`)) { delete data[currentCategory].sections[sid]; saveData(); currentFilter = null; renderContent(); renderReference(); } } else if (nameToConfirm !== null) { alert('Название не совпадает!'); } };
         window.editTopicName = function(tid) { if (!isAdmin) return; editingTopicNameId = tid; renderContent(); };
         window.cancelEditTopicName = function() { editingTopicNameId = null; renderContent(); };
-        window.saveTopicName = function(tid) {
-            if (!isAdmin) return;
-            const input = document.getElementById('editTopicName-' + tid); if (!input) return;
-            const newName = input.value.trim(); if (!newName) return;
-            const sec = data[currentCategory]?.sections[currentFilter.sectionId];
-            if (sec && sec.topics[tid]) { sec.topics[tid].name = newName; saveData(); }
-            editingTopicNameId = null; renderContent(); renderReference();
-        };
-        window.deleteTopic = function(tid) {
-            if (!isAdmin) return;
-            const sec = data[currentCategory]?.sections[currentFilter.sectionId]; const topic = sec?.topics[tid]; if (!topic) return;
-            if (!confirm(`Удалить тему "${topic.name}" и всё её содержимое?`)) return;
-            delete sec.topics[tid]; saveData(); renderContent(); renderReference();
-        };
-        window.editBlock = function(tid, index) {
-            if (!isAdmin) return;
-            editingTopicId = tid; editingBlockIndex = index;
-            const sec = data[currentCategory]?.sections[currentFilter.sectionId];
-            const topic = sec?.topics[tid];
-            if (topic && topic.blocks && topic.blocks[index]) { editingBlockData = JSON.parse(JSON.stringify(topic.blocks[index])); }
-            renderContent();
-        };
+        window.saveTopicName = function(tid) { if (!isAdmin) return; const input = document.getElementById('editTopicName-' + tid); if (!input) return; const newName = input.value.trim(); if (!newName) return; const sec = data[currentCategory]?.sections[currentFilter.sectionId]; if (sec && sec.topics[tid]) { sec.topics[tid].name = newName; saveData(); } editingTopicNameId = null; renderContent(); renderReference(); };
+        window.deleteTopic = function(tid) { if (!isAdmin) return; const sec = data[currentCategory]?.sections[currentFilter.sectionId]; const topic = sec?.topics[tid]; if (!topic) return; if (!confirm(`Удалить тему "${topic.name}" и всё её содержимое?`)) return; delete sec.topics[tid]; saveData(); renderContent(); renderReference(); };
+        window.editBlock = function(tid, index) { if (!isAdmin) return; editingTopicId = tid; editingBlockIndex = index; const sec = data[currentCategory]?.sections[currentFilter.sectionId]; const topic = sec?.topics[tid]; if (topic && topic.blocks && topic.blocks[index]) { editingBlockData = JSON.parse(JSON.stringify(topic.blocks[index])); } renderContent(); };
         window.cancelBlockEdit = function() { editingBlockIndex = null; editingTopicId = null; editingBlockData = null; renderContent(); };
-        window.handleEditBlockImages = function(event, index) {
-            const files = Array.from(event.target.files);
-            if (!editingBlockData) editingBlockData = { images: [] };
-            if (!editingBlockData.images) editingBlockData.images = [];
-            const toAdd = files.slice(0, 3 - editingBlockData.images.length);
-            toAdd.forEach(file => { const r = new FileReader(); r.onload = e => { editingBlockData.images.push(e.target.result); renderContent(); }; r.readAsDataURL(file); });
-            event.target.value = '';
-        };
+        window.handleEditBlockImages = function(event, index) { const files = Array.from(event.target.files); if (!editingBlockData) editingBlockData = { images: [] }; if (!editingBlockData.images) editingBlockData.images = []; const toAdd = files.slice(0, 3 - editingBlockData.images.length); toAdd.forEach(file => { const r = new FileReader(); r.onload = e => { editingBlockData.images.push(e.target.result); renderContent(); }; r.readAsDataURL(file); }); event.target.value = ''; };
         window.removeEditBlockImage = function(blockIdx, imgIdx) { if (editingBlockData && editingBlockData.images) { editingBlockData.images.splice(imgIdx, 1); renderContent(); } };
-        window.saveBlockEdit = function(tid, index) {
-            if (!isAdmin) return;
-            const titleEl = document.getElementById('editBlockTitle-' + index); const textEl = document.getElementById('editBlockText-' + index);
-            if (!titleEl || !textEl) return;
-            const sec = data[currentCategory]?.sections[currentFilter.sectionId]; const topic = sec?.topics[tid];
-            if (topic && topic.blocks && topic.blocks[index]) {
-                topic.blocks[index].title = titleEl.value.trim(); topic.blocks[index].text = textEl.value.trim();
-                if (editingBlockData && editingBlockData.images) { topic.blocks[index].images = [...editingBlockData.images]; }
-                saveData();
-            }
-            editingBlockIndex = null; editingTopicId = null; editingBlockData = null; renderContent();
-        };
+        window.saveBlockEdit = function(tid, index) { if (!isAdmin) return; const titleEl = document.getElementById('editBlockTitle-' + index); const textEl = document.getElementById('editBlockText-' + index); if (!titleEl || !textEl) return; const sec = data[currentCategory]?.sections[currentFilter.sectionId]; const topic = sec?.topics[tid]; if (topic && topic.blocks && topic.blocks[index]) { topic.blocks[index].title = titleEl.value.trim(); topic.blocks[index].text = textEl.value.trim(); if (editingBlockData && editingBlockData.images) { topic.blocks[index].images = [...editingBlockData.images]; } saveData(); } editingBlockIndex = null; editingTopicId = null; editingBlockData = null; renderContent(); };
         window.deleteBlock = function(tid, index) { if (!isAdmin) return; if (!confirm('Удалить этот блок?')) return; const sec = data[currentCategory]?.sections[currentFilter.sectionId]; const topic = sec?.topics[tid]; if (topic && topic.blocks) { topic.blocks.splice(index, 1); saveData(); renderContent(); renderReference(); } };
 
         function renderFeed() {
@@ -631,21 +586,9 @@
 
         window.startEdit = function(id) { if (!isAdmin) return; editingPubId = id; const pub = publications.find(p => p.id === id); if (pub) { editingPubData = JSON.parse(JSON.stringify(pub)); } renderFeed(); };
         window.cancelEdit = function() { editingPubId = null; editingPubData = null; renderFeed(); };
-        window.handleEditPubImages = function(event) {
-            const files = Array.from(event.target.files);
-            if (!editingPubData) editingPubData = { images: [] };
-            if (!editingPubData.images) editingPubData.images = [];
-            const toAdd = files.slice(0, 8 - editingPubData.images.length);
-            toAdd.forEach(file => { const r = new FileReader(); r.onload = e => { editingPubData.images.push(e.target.result); renderFeed(); }; r.readAsDataURL(file); });
-            event.target.value = '';
-        };
+        window.handleEditPubImages = function(event) { const files = Array.from(event.target.files); if (!editingPubData) editingPubData = { images: [] }; if (!editingPubData.images) editingPubData.images = []; const toAdd = files.slice(0, 8 - editingPubData.images.length); toAdd.forEach(file => { const r = new FileReader(); r.onload = e => { editingPubData.images.push(e.target.result); renderFeed(); }; r.readAsDataURL(file); }); event.target.value = ''; };
         window.removeEditPubImage = function(idx) { if (editingPubData && editingPubData.images) { editingPubData.images.splice(idx, 1); renderFeed(); } };
-        window.saveEdit = function(id) {
-            if (!isAdmin) return;
-            const ta = document.getElementById('editText-' + id); if (!ta) return;
-            const pub = publications.find(p => p.id === id); if (pub) { pub.text = ta.value.trim(); if (editingPubData && editingPubData.images) { pub.images = [...editingPubData.images]; } savePublications(); }
-            editingPubId = null; editingPubData = null; renderFeed();
-        };
+        window.saveEdit = function(id) { if (!isAdmin) return; const ta = document.getElementById('editText-' + id); if (!ta) return; const pub = publications.find(p => p.id === id); if (pub) { pub.text = ta.value.trim(); if (editingPubData && editingPubData.images) { pub.images = [...editingPubData.images]; } savePublications(); } editingPubId = null; editingPubData = null; renderFeed(); };
         window.deletePublication = function(id) { if (!isAdmin) return; if (confirm('Удалить?')) { publications = publications.filter(p => p.id !== id); savePublications(); renderFeed(); } };
         window.goBackToFeed = function() { currentFilter = null; editingBlockIndex = null; editingTopicId = null; editingTopicNameId = null; editingBlockData = null; editingPubData = null; scrollToTopicId = null; renderContent(); renderReference(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
         window.toggleReference = function() { const dropdown = document.getElementById('refDropdown'); const btn = document.getElementById('refBtn'); if (dropdown.classList.contains('show')) { dropdown.classList.remove('show'); btn.classList.remove('active'); } else { renderReference(); dropdown.classList.add('show'); btn.classList.add('active'); } };
