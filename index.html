@@ -7,15 +7,15 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; color: #1a1a1a; line-height: 1.5; scroll-behavior: smooth; }
-        .header { background: #fff; border-bottom: 1px solid #e0e0e0; position: sticky; top: 0; z-index: 100; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #d7c4a1de; color: #1a1a1a; line-height: 1.5; scroll-behavior: smooth; }
+        .header {border-bottom: 1px solid white; background: #bbe1f1;  position: sticky; top: 0; z-index: 100; }
         .navbar { max-width: 1000px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; height: 56px; padding: 0 20px; }
         .logo { font-size: 17px; font-weight: 600; color: #6c3fc0; }
         .nav-menu { display: flex; gap: 2px; }
         .nav-item { padding: 8px 16px; cursor: pointer; font-size: 14px; font-weight: 500; color: #555; border-radius: 6px; transition: 0.15s; user-select: none; }
         .nav-item:hover { background: #f0f0f0; color: #333; }
         .nav-item.active { background: #6c3fc0; color: #fff; }
-        .main-content { max-width: 750px; margin: 0 auto; padding: 28px 20px; }
+        .main-content { max-width: 750px; margin: 0 auto; padding: 28px 20px; background: #d9f1f9; border-radius: 0 0 10px 10px;border-bottom: 3px solid white;border-left: 3px solid white;border-right: 3px solid white;}
         .section-header { margin-bottom: 8px; }
         .section-title-row { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 10px; margin-bottom: 6px; }
         .back-arrow { font-size: 18px; cursor: pointer; color: #6c3fc0; width: 40px; height: 40px; border-radius: 8px; transition: 0.15s; user-select: none; display: none; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; line-height: 1; background: #f5f5f5; }
@@ -44,15 +44,11 @@
         .ref-topic:hover { background: #f5f0ff; color: #6c3fc0; }
         .ref-topic.active-topic { background: #6c3fc0; color: #fff; }
         .ref-empty { padding: 20px; text-align: center; color: #999; font-size: 13px; }
-        
-        /* Публикации */
         .feed-list { display: flex; flex-direction: column; gap: 16px; }
         .publication-card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
         .pub-header { padding: 16px 20px 0; }
         .pub-title { font-size: 20px; font-weight: 700; color: #1a1a1a; margin-bottom: 8px; line-height: 1.3; word-wrap: break-word; overflow-wrap: break-word; }
         .pub-text { font-size: 15px; color: #444; line-height: 1.6; margin-bottom: 12px; word-wrap: break-word; overflow-wrap: break-word; }
-        
-        /* Фото в публикациях - отступ 1px */
         .pub-images { display: grid; gap: 1px; }
         .pub-images.img-1 { grid-template-columns: 1fr; }
         .pub-images.img-2 { grid-template-columns: 1fr 1fr; }
@@ -62,9 +58,16 @@
         .pub-images.img-6,
         .pub-images.img-7,
         .pub-images.img-8 { grid-template-columns: 1fr 1fr 1fr; }
-        .pub-img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; transition: 0.2s; aspect-ratio: 1; max-width: 236px; max-height: 140px; border-radius: 0; }
+        .pub-img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; transition: 0.2s; aspect-ratio: 1; }
+        .pub-images.img-1 .pub-img,
+        .pub-images.img-2 .pub-img,
+        .pub-images.img-3 .pub-img,
+        .pub-images.img-4 .pub-img,
+        .pub-images.img-5 .pub-img,
+        .pub-images.img-6 .pub-img,
+        .pub-images.img-7 .pub-img,
+        .pub-images.img-8 .pub-img { max-height: 140px; max-width: 140px;aspect-ratio: 1; }
         .pub-img:hover { opacity: 0.9; }
-        
         .pub-footer { padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #999; }
         .pub-actions { display: flex; gap: 12px; }
         .pub-action-btn { background: none; border: none; font-size: 12px; cursor: pointer; color: #888; padding: 4px 8px; border-radius: 4px; transition: 0.15s; }
@@ -72,8 +75,9 @@
         .pub-action-btn.delete:hover { background: #fef2f2; color: #ef4444; }
 
         /* Справочник */
-        .topics-wrapper { background: #fff; border-radius: 12px; padding: 20px 0 32px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+        .topics-wrapper { background: #fff; border-radius: 12px; padding: 32px 28px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
         
+        /* Название раздела сверху */
         .section-name-header { font-size: 30px; font-weight: 700; color: #1a1a1a; text-align: center; padding: 16px 10px; margin-bottom: 32px; position: relative; }
         .section-name-header span { margin-right: 5px; }
         .section-admin-actions { position: absolute; top: 10px; right: 10px; display: flex; gap: 5px; }
@@ -81,25 +85,25 @@
         .section-admin-btn:hover { background: #f0f0f0; color: #333; }
         .section-admin-btn.delete-btn:hover { background: #fef2f2; color: #ef4444; border-color: #ef4444; }
         
-        .topic-section-block { margin-bottom: 36px; padding-bottom: 32px; border-bottom: 2px solid #f0f0f0; padding-left: 0; padding-right: 0; }
+        .topic-section-block { margin-bottom: 36px; padding-bottom: 32px; border-bottom: 2px solid #f0f0f0; }
         .topic-section-block:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-        .topic-name-header { font-size: 24px; font-weight: 700; color: #1a1a1a; text-align: center; padding: 8px 10px 16px; margin-bottom: 16px; position: sticky; top: 56px; background: #fff; z-index: 10; position: relative; }
-        .topic-admin-actions { position: absolute; top: 8px; right: 10px; display: flex; gap: 5px; }
+        .topic-name-header { font-size: 24px; font-weight: 700; color: #1a1a1a; text-align: center; padding: 12px 10px 20px; margin-bottom: 20px; position: sticky; top: 56px; background: #fff; z-index: 10; position: relative; }
+        .topic-admin-actions { position: absolute; top: 10px; right: 10px; display: flex; gap: 5px; }
         .topic-admin-btn { background: none; border: none; font-size: 11px; cursor: pointer; color: #999; padding: 3px 8px; border-radius: 4px; transition: 0.15s; }
         .topic-admin-btn:hover { background: #f0f0f0; color: #555; }
         .topic-admin-btn.delete-btn:hover { background: #fef2f2; color: #ef4444; }
         
-        .topic-block { margin-bottom: 20px; padding: 0 28px 16px 28px; border-bottom: 1px solid #f5f5f5; position: relative; }
+        .topic-block { margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #f5f5f5; position: relative; }
         .topic-block:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-        .topic-subtitle { font-size: 18px; font-weight: 600; color: #1a1a1a; margin-bottom: 8px; }
-        .topic-text-block { white-space: pre-wrap; margin-bottom: 8px; font-size: 15px; color: #444; line-height: 1.7; padding: 0; }
+        .topic-subtitle { font-size: 18px; font-weight: 600; color: #1a1a1a; margin-bottom: 8px; word-wrap: break-word; overflow-wrap: break-word; }
+        .topic-text-block { white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; margin-bottom: 8px; font-size: 15px; color: #444; line-height: 1.7; }
         
-        /* Фото в справочнике - отступ 1px */
-        .topic-images { display: grid; gap: 1px; margin: 8px 0; width: 100%; }
+        /* Все фото в справочнике одинакового размера как 3 фото */
+        .topic-images { display: grid; gap: 2px; margin: 8px 0; }
         .topic-images.img-1 { grid-template-columns: 1fr; }
         .topic-images.img-2 { grid-template-columns: 1fr 1fr; }
         .topic-images.img-3 { grid-template-columns: 1fr 1fr 1fr; }
-        .topic-images img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; aspect-ratio: 1; max-width: 236px; max-height: 140px; border-radius: 0; }
+        .topic-images img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; border-radius: 8px; aspect-ratio: 1; max-height: 140px; }
         
         .block-actions { display: flex; gap: 8px; margin-top: 8px; }
         .block-action-btn { background: none; border: none; font-size: 11px; cursor: pointer; color: #999; padding: 3px 8px; border-radius: 4px; transition: 0.15s; }
@@ -129,7 +133,7 @@
         .chat-images.img-7,
         .chat-images.img-8,
         .chat-images.img-9 { grid-template-columns: 1fr 1fr 1fr; }
-        .chat-images img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; aspect-ratio: 1; max-width: 236px; max-height: 140px; border-radius: 0; }
+        .chat-images img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; border-radius: 6px; aspect-ratio: 1; max-height: 100px; }
         
         .chat-meta { font-size: 11px; color: #999; margin-top: 2px; padding: 0 4px; }
         .chat-meta .edited { color: #6c3fc0; font-style: italic; }
@@ -140,7 +144,7 @@
         .chat-action-btn { background: none; border: none; padding: 4px 8px; font-size: 12px; cursor: pointer; border-radius: 4px; color: #555; white-space: nowrap; }
         .chat-action-btn:hover { background: #f0f0f0; }
         .chat-action-btn.delete-btn:hover { background: #fef2f2; color: #ef4444; }
-        .chat-input-area { padding: 12px 16px; background: #fff; border-top: 1px solid #e0e0e0; display: flex; gap: 10px; align-items: flex-end; }
+        .chat-input-area { padding: 12px 16px; background: #d7c4a1de; border-top: 1px solid #272727;border-right: 1px solid #272727;border-left: 1px solid #272727; display: flex; gap: 10px; align-items: flex-end; border-radius: 10px 10px 0 0; }
         .chat-input-area input[type="text"] { flex: 1; padding: 10px 14px; border: 1px solid #d0d0d0; border-radius: 20px; font-size: 14px; font-family: inherit; background: #fafafa; outline: none; }
         .chat-input-area input[type="text"]:focus { border-color: #6c3fc0; background: #fff; }
         .chat-input-area button { width: 40px; height: 40px; border-radius: 50%; border: none; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: 0.15s; }
@@ -148,7 +152,7 @@
         .chat-img-btn:hover { background: #e0e0e0; }
         .chat-send-btn { background: #6c3fc0; color: #fff; }
         .chat-send-btn:hover { background: #5b32a8; }
-        .chat-image-preview { display: flex; gap: 5px; padding: 8px 16px 0; flex-wrap: wrap; }
+        .chat-image-preview { display: flex; gap: 6px; padding: 8px 16px 0; flex-wrap: wrap; }
         .chat-image-preview .preview-item { position: relative; width: 50px; height: 50px; border-radius: 6px; overflow: hidden; }
         .chat-image-preview .preview-item img { width: 100%; height: 100%; object-fit: cover; }
         .chat-image-preview .preview-item .remove-img { position: absolute; top: 1px; right: 1px; background: rgba(0,0,0,0.6); color: #fff; border: none; width: 16px; height: 16px; border-radius: 50%; cursor: pointer; font-size: 10px; display: flex; align-items: center; justify-content: center; }
@@ -189,15 +193,12 @@
         .image-upload-area.purple-hover:hover { border-color: #6c3fc0; background: #f5f0ff; }
         .image-upload-area input { display: none; }
         .image-upload-area .upload-text { color: #999; font-size: 13px; }
-        
-        /* Маленькие превью с крестиками - отступ 5px */
-        .image-preview { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 8px; }
+        .image-preview { display: grid; grid: row;  gap: 5px; margin-bottom: 8px; }
         .image-preview .preview-item { position: relative; aspect-ratio: 1; border-radius: 6px; overflow: hidden; max-width: 50px; max-height: 50px; }
         .image-preview .preview-item img { width: 100%; height: 100%; object-fit: cover; }
         .image-preview .preview-item .remove-img { position: absolute; top: 1px; right: 1px; background: rgba(0,0,0,0.6); color: #fff; border: none; width: 16px; height: 16px; border-radius: 50%; cursor: pointer; font-size: 10px; display: flex; align-items: center; justify-content: center; }
-        .image-preview.topic-preview { grid-template-columns: repeat(3, 1fr); }
-        .image-preview.topic-preview .preview-item { max-width: 45px; max-height: 45px; }
         
+        .image-preview.topic-preview .preview-item { max-width: 45px; max-height: 45px; }
         .submit-btn { width: 100%; padding: 12px; color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; }
         .submit-btn.purple { background: #6c3fc0; }
         .submit-btn.purple:hover { background: #5b32a8; }
@@ -219,7 +220,7 @@
         .edit-actions button { padding: 6px 14px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500; }
         .edit-save { background: #6c3fc0; color: #fff; }
         .edit-cancel { background: #f0f0f0; color: #555; }
-        @media (max-width: 600px) { .nav-item { padding: 8px 10px; font-size: 13px; } .reference-dropdown { min-width: 250px; right: -50px; } .topic-name-header { font-size: 20px; } .topics-wrapper { padding: 16px 0 24px 0; } }
+        @media (max-width: 600px) { .nav-item { padding: 8px 10px; font-size: 13px; } .reference-dropdown { min-width: 250px; right: -50px; } .topic-name-header { font-size: 20px; padding: 10px 5px 16px; } .topics-wrapper { padding: 24px 16px; } }
     </style>
 </head>
 <body>
@@ -278,31 +279,44 @@
         <div class="form-box">
             <div class="top">Справочник <button class="close" onclick="closeForm()">&times;</button></div>
             <div class="body">
-                <div class="field"><label>Раздел</label>
+                <div class="field">
+                    <label>Раздел</label>
                     <div class="field-row relative" id="sectionRow">
                         <button class="select-btn" id="sectionBtn" onclick="toggleSectionSelect()">Выберите раздел</button>
                         <button class="create-btn" onclick="showCreateInput('section')">+ Создать</button>
                         <div class="mini-select" id="sectionSelect"></div>
                     </div>
                     <div id="sectionCreateInput" style="display:none; margin-top:8px;">
-                        <input type="text" id="newSectionName" placeholder="Название нового раздела">
+                        <input type="text" id="newSectionName" placeholder="Название нового раздела" oninput="checkWordLength(this, 30)">
+                        <div class="char-warning" id="newSectionNameCharWarning">Слово слишком длинное! Максимум 30 символов.</div>
                         <button class="create-btn" style="margin-top:6px;" onclick="createSection()">✓ Сохранить раздел</button>
                     </div>
                 </div>
-                <div class="field"><label>Тема</label>
+                <div class="field">
+                    <label>Тема</label>
                     <div class="field-row relative" id="topicRow">
                         <button class="select-btn" id="topicBtn" onclick="toggleTopicSelect()">Выберите тему</button>
                         <button class="create-btn" onclick="showCreateInput('topic')">+ Создать</button>
                         <div class="mini-select" id="topicSelect"></div>
                     </div>
                     <div id="topicCreateInput" style="display:none; margin-top:8px;">
-                        <input type="text" id="newTopicName" placeholder="Название новой темы">
+                        <input type="text" id="newTopicName" placeholder="Название новой темы" oninput="checkWordLength(this, 30)">
+                        <div class="char-warning" id="newTopicNameCharWarning">Слово слишком длинное! Максимум 30 символов.</div>
                         <button class="create-btn" style="margin-top:6px;" onclick="createTopic()">✓ Сохранить тему</button>
                     </div>
                 </div>
-                <div class="field"><label>Заголовок</label><input type="text" id="refTitle" placeholder="Заголовок для этого текста..."></div>
-                <div class="field"><label>Текст</label><textarea id="postText" placeholder="Введите текст..."></textarea></div>
-                <div class="field"><label>Картинки (до 3)</label>
+                <div class="field">
+                    <label>Заголовок</label>
+                    <input type="text" id="refTitle" placeholder="Заголовок для этого текста..." oninput="checkWordLength(this, 40)">
+                    <div class="char-warning" id="refTitleCharWarning">Слово слишком длинное! Максимум 40 символов.</div>
+                </div>
+                <div class="field">
+                    <label>Текст</label>
+                    <textarea id="postText" placeholder="Введите текст..." oninput="checkWordLength(this, 50)"></textarea>
+                    <div class="char-warning" id="postTextCharWarning">Слово слишком длинное! Максимум 50 символов.</div>
+                </div>
+                <div class="field">
+                    <label>Картинки (до 3)</label>
                     <div class="image-preview topic-preview" id="refImagePreview"></div>
                     <div class="image-upload-area purple-hover" onclick="document.getElementById('refImageInput').click()">
                         <div class="upload-text">📷 Добавить картинки</div>
@@ -319,9 +333,18 @@
         <div class="publish-form-box">
             <div class="top">Создание публикации <button class="close" onclick="closePublishForm()">&times;</button></div>
             <div class="body">
-                <div class="field"><label>Заголовок (необязательно)</label><input type="text" id="pubTitle" placeholder="Введите заголовок" class="pub-title-input"></div>
-                <div class="field"><label>Текст</label><textarea id="pubText" placeholder="Текст публикации" style="height:120px;"></textarea></div>
-                <div class="field"><label>Картинки (до 8)</label>
+                <div class="field">
+                    <label>Заголовок (необязательно)</label>
+                    <input type="text" id="pubTitle" placeholder="Введите заголовок" class="pub-title-input" oninput="checkWordLength(this, 40)">
+                    <div class="char-warning" id="pubTitleCharWarning">Слово слишком длинное! Максимум 40 символов.</div>
+                </div>
+                <div class="field">
+                    <label>Текст</label>
+                    <textarea id="pubText" placeholder="Текст публикации" style="height:120px;" oninput="checkWordLength(this, 50)"></textarea>
+                    <div class="char-warning" id="pubTextCharWarning">Слово слишком длинное! Максимум 50 символов.</div>
+                </div>
+                <div class="field">
+                    <label>Картинки (до 8)</label>
                     <div class="image-preview" id="imagePreview"></div>
                     <div class="image-upload-area" onclick="document.getElementById('imageInput').click()">
                         <div class="upload-text">📷 Добавить картинки</div>
@@ -367,13 +390,13 @@
         let scrollToTopicId = null;
         let currentCategory = 'vastu';
         let editingTopicNameId = null;
-        let editingBlockData = null;
-        let editingPubData = null;
+        let editingBlockData = null; // Для хранения данных при редактировании блока с фото
 
+        window.checkWordLength = function(input, maxLen) { const warning = document.getElementById(input.id + 'CharWarning'); if (!warning) return; const words = input.value.split(/\s+/); warning.classList.toggle('show', words.some(w => w.length > maxLen)); };
         function getCategoryName(cat) { return { vastu: 'Васту', astrology: 'Астрология', esoteric: 'Эзотерика', chat: 'Чат' }[cat] || cat; }
 
         window.switchTab = function(tab, el) {
-            currentTab = tab; currentFilter = null; editingPubId = null; editingBlockIndex = null; editingTopicNameId = null; editingBlockData = null; editingPubData = null; scrollToTopicId = null;
+            currentTab = tab; currentFilter = null; editingPubId = null; editingBlockIndex = null; editingTopicNameId = null; editingBlockData = null; scrollToTopicId = null;
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active')); el.classList.add('active');
             const mainWrap = document.getElementById('mainContentWrap'); const chatWrap = document.getElementById('chatWrap'); const addButtons = document.getElementById('addButtons');
             if (tab === 'chat') { mainWrap.style.display = 'none'; chatWrap.style.display = 'block'; addButtons.style.display = 'none'; loadData(); }
@@ -397,33 +420,43 @@
         }
 
         function loadFromLocalStorage() {
-            const saved = localStorage.getItem('sp_data_v8'); if (saved) { try { const parsed = JSON.parse(saved); if (parsed && parsed.vastu) data = parsed; } catch(e) {} }
+            const saved = localStorage.getItem('sp_data_v6'); if (saved) { try { const parsed = JSON.parse(saved); if (parsed && parsed.vastu) data = parsed; } catch(e) {} }
             if (Object.keys(data.vastu.sections).length === 0) initDemoData();
-            const savedPubs = localStorage.getItem('sp_pubs_v8'); if (savedPubs) { try { publications = JSON.parse(savedPubs); } catch(e) {} }
-            const savedChat = localStorage.getItem('sp_chat_v8'); if (savedChat) { try { chatMessages = JSON.parse(savedChat); } catch(e) {} }
+            const savedPubs = localStorage.getItem('sp_pubs_v6'); if (savedPubs) { try { publications = JSON.parse(savedPubs); } catch(e) {} }
+            const savedChat = localStorage.getItem('sp_chat_v6'); if (savedChat) { try { chatMessages = JSON.parse(savedChat); } catch(e) {} }
         }
 
+        // Сохранение без изображений в localStorage для экономии места
         function stripImagesForLocal(obj) {
             const clean = JSON.parse(JSON.stringify(obj));
-            for (let cat in clean) { for (let sid in clean[cat].sections) { for (let tid in clean[cat].sections[sid].topics) { if (clean[cat].sections[sid].topics[tid].blocks) { clean[cat].sections[sid].topics[tid].blocks = clean[cat].sections[sid].topics[tid].blocks.map(b => ({...b, images: []})); } } } }
+            for (let cat in clean) {
+                for (let sid in clean[cat].sections) {
+                    for (let tid in clean[cat].sections[sid].topics) {
+                        if (clean[cat].sections[sid].topics[tid].blocks) {
+                            clean[cat].sections[sid].topics[tid].blocks = clean[cat].sections[sid].topics[tid].blocks.map(b => ({...b, images: []}));
+                        }
+                    }
+                }
+            }
             return clean;
         }
 
         async function saveData() {
-            try { localStorage.setItem('sp_data_v8', JSON.stringify(stripImagesForLocal(data))); } catch(e) {}
-            if (supabaseClient) { try { await supabaseClient.from('reference').upsert({ id: 1, data: data }); } catch(e) {} }
+            // В localStorage сохраняем без картинок
+            try { localStorage.setItem('sp_data_v6', JSON.stringify(stripImagesForLocal(data))); } catch(e) { console.log('localStorage полон, очистите данные'); }
+            if (supabaseClient) { try { await supabaseClient.from('reference').upsert({ id: 1, data: data }); } catch(e) { console.log('Сохранено в Supabase'); } }
         }
 
         async function savePublications() {
             const cleanPubs = publications.map(p => ({...p, images: []}));
-            try { localStorage.setItem('sp_pubs_v8', JSON.stringify(cleanPubs)); } catch(e) {}
-            if (supabaseClient) { try { await supabaseClient.from('publications').delete().neq('id', '0'); if (publications.length > 0) { const chunkSize = 10; for (let i = 0; i < publications.length; i += chunkSize) { await supabaseClient.from('publications').insert(publications.slice(i, i + chunkSize)); } } } catch(e) {} }
+            try { localStorage.setItem('sp_pubs_v6', JSON.stringify(cleanPubs)); } catch(e) { console.log('localStorage полон'); }
+            if (supabaseClient) { try { await supabaseClient.from('publications').delete().neq('id', '0'); if (publications.length > 0) { await supabaseClient.from('publications').insert(publications); } } catch(e) { console.log('Публикации сохранены в Supabase'); } }
         }
 
         async function saveChat() {
             const cleanChat = chatMessages.map(m => ({...m, images: []}));
-            try { localStorage.setItem('sp_chat_v8', JSON.stringify(cleanChat)); } catch(e) {}
-            if (supabaseClient) { try { const msg = chatMessages[chatMessages.length - 1]; if (msg) await supabaseClient.from('chat').insert([msg]); } catch(e) {} }
+            try { localStorage.setItem('sp_chat_v6', JSON.stringify(cleanChat)); } catch(e) { console.log('localStorage полон'); }
+            if (supabaseClient) { try { const msg = chatMessages[chatMessages.length - 1]; if (msg) await supabaseClient.from('chat').insert([msg]); } catch(e) { console.log('Чат сохранен в Supabase'); } }
         }
 
         function initDemoData() {
@@ -449,6 +482,7 @@
                 if (sec && Object.keys(sec.topics).length > 0) {
                     let html = '<div class="topics-wrapper">';
                     
+                    // Название раздела сверху с двоеточием
                     html += `<div class="section-name-header">`;
                     html += `${sec.name}<span>:</span>`;
                     if (isAdmin) {
@@ -482,17 +516,18 @@
                             topic.blocks.forEach((block, i) => {
                                 html += `<div class="topic-block">`;
                                 if (editingBlockIndex === i && editingTopicId === tid && isAdmin) {
+                                    // Режим редактирования с фото как при создании
                                     html += `<input type="text" id="editBlockTitle-${i}" value="${escapeAttr(block.title || '')}" placeholder="Заголовок" style="width:100%;padding:8px;margin-bottom:8px;border:1px solid #d0d0d0;border-radius:6px;font-size:16px;font-weight:600;">`;
                                     html += `<textarea id="editBlockText-${i}" style="width:100%;min-height:80px;padding:8px;border:1px solid #d0d0d0;border-radius:6px;font-size:14px;">${escapeHtml(block.text || '')}</textarea>`;
-                                    if (editingBlockData && editingBlockData.images && editingBlockData.images.length > 0) {
-                                        html += `<div class="image-preview topic-preview" style="margin-top:8px;">`;
+                                    if (editingBlockData && editingBlockData.images) {
+                                        html += `<div class="image-preview topic-preview" id="editBlockImages-${i}">`;
                                         editingBlockData.images.forEach((img, idx) => {
                                             html += `<div class="preview-item"><img src="${img}"><button class="remove-img" onclick="removeEditBlockImage(${i}, ${idx})">&times;</button></div>`;
                                         });
                                         html += `</div>`;
-                                    }
-                                    if (!editingBlockData || !editingBlockData.images || editingBlockData.images.length < 3) {
-                                        html += `<div class="image-upload-area purple-hover" onclick="document.getElementById('editBlockImageInput-${i}').click()" style="margin-top:8px;"><div class="upload-text">📷 Добавить картинки</div><input type="file" id="editBlockImageInput-${i}" accept="image/*" multiple onchange="handleEditBlockImages(event, ${i})" style="display:none;"></div>`;
+                                        if (editingBlockData.images.length < 3) {
+                                            html += `<div class="image-upload-area purple-hover" onclick="document.getElementById('editBlockImageInput-${i}').click()" style="margin-top:8px;"><div class="upload-text">📷 Добавить картинки</div><input type="file" id="editBlockImageInput-${i}" accept="image/*" multiple onchange="handleEditBlockImages(event, ${i})" style="display:none;"></div>`;
+                                        }
                                     }
                                     html += `<div class="edit-actions"><button class="edit-save" onclick="saveBlockEdit('${tid}', ${i})">Сохранить</button><button class="edit-cancel" onclick="cancelBlockEdit()">Отмена</button></div>`;
                                 } else {
@@ -523,18 +558,117 @@
             } else { backArrow.classList.remove('show'); breadcrumb.innerHTML = catName; renderFeed(); }
         }
 
-        window.editSectionName = function(sid) { if (!isAdmin) return; const sec = data[currentCategory].sections[sid]; if (!sec) return; const newName = prompt('Новое название раздела:', sec.name); if (newName && newName.trim()) { sec.name = newName.trim(); saveData(); renderContent(); renderReference(); } };
-        window.deleteSection = function(sid) { if (!isAdmin) return; const sec = data[currentCategory].sections[sid]; if (!sec) return; const nameToConfirm = prompt(`Для удаления раздела "${sec.name}" введите его название:`); if (nameToConfirm === sec.name) { if (confirm(`Вы уверены? Раздел "${sec.name}" и всё его содержимое будет удалено.`)) { delete data[currentCategory].sections[sid]; saveData(); currentFilter = null; renderContent(); renderReference(); } } else if (nameToConfirm !== null) { alert('Название не совпадает!'); } };
+        // Функции для раздела
+        window.editSectionName = function(sid) {
+            if (!isAdmin) return;
+            const sec = data[currentCategory].sections[sid];
+            if (!sec) return;
+            const newName = prompt('Новое название раздела:', sec.name);
+            if (newName && newName.trim()) {
+                sec.name = newName.trim();
+                saveData();
+                renderContent();
+                renderReference();
+            }
+        };
+
+        window.deleteSection = function(sid) {
+            if (!isAdmin) return;
+            const sec = data[currentCategory].sections[sid];
+            if (!sec) return;
+            const nameToConfirm = prompt(`Для удаления раздела "${sec.name}" введите его название:`);
+            if (nameToConfirm === sec.name) {
+                if (confirm(`Вы уверены? Раздел "${sec.name}" и всё его содержимое будет удалено.`)) {
+                    delete data[currentCategory].sections[sid];
+                    saveData();
+                    currentFilter = null;
+                    renderContent();
+                    renderReference();
+                }
+            } else if (nameToConfirm !== null) {
+                alert('Название не совпадает!');
+            }
+        };
+
+        // Функции для темы
         window.editTopicName = function(tid) { if (!isAdmin) return; editingTopicNameId = tid; renderContent(); };
         window.cancelEditTopicName = function() { editingTopicNameId = null; renderContent(); };
-        window.saveTopicName = function(tid) { if (!isAdmin) return; const input = document.getElementById('editTopicName-' + tid); if (!input) return; const newName = input.value.trim(); if (!newName) return; const sec = data[currentCategory]?.sections[currentFilter.sectionId]; if (sec && sec.topics[tid]) { sec.topics[tid].name = newName; saveData(); } editingTopicNameId = null; renderContent(); renderReference(); };
-        window.deleteTopic = function(tid) { if (!isAdmin) return; const sec = data[currentCategory]?.sections[currentFilter.sectionId]; const topic = sec?.topics[tid]; if (!topic) return; if (!confirm(`Удалить тему "${topic.name}" и всё её содержимое?`)) return; delete sec.topics[tid]; saveData(); renderContent(); renderReference(); };
-        window.editBlock = function(tid, index) { if (!isAdmin) return; editingTopicId = tid; editingBlockIndex = index; const sec = data[currentCategory]?.sections[currentFilter.sectionId]; const topic = sec?.topics[tid]; if (topic && topic.blocks && topic.blocks[index]) { editingBlockData = JSON.parse(JSON.stringify(topic.blocks[index])); } renderContent(); };
+        window.saveTopicName = function(tid) {
+            if (!isAdmin) return;
+            const input = document.getElementById('editTopicName-' + tid); if (!input) return;
+            const newName = input.value.trim(); if (!newName) return;
+            const sec = data[currentCategory]?.sections[currentFilter.sectionId];
+            if (sec && sec.topics[tid]) { sec.topics[tid].name = newName; saveData(); }
+            editingTopicNameId = null; renderContent(); renderReference();
+        };
+        window.deleteTopic = function(tid) {
+            if (!isAdmin) return;
+            const sec = data[currentCategory]?.sections[currentFilter.sectionId];
+            const topic = sec?.topics[tid]; if (!topic) return;
+            if (!confirm(`Удалить тему "${topic.name}" и всё её содержимое?`)) return;
+            delete sec.topics[tid]; saveData(); renderContent(); renderReference();
+        };
+
+        // Функции для блока с поддержкой фото при редактировании
+        window.editBlock = function(tid, index) {
+            if (!isAdmin) return;
+            editingTopicId = tid;
+            editingBlockIndex = index;
+            const sec = data[currentCategory]?.sections[currentFilter.sectionId];
+            const topic = sec?.topics[tid];
+            if (topic && topic.blocks && topic.blocks[index]) {
+                editingBlockData = JSON.parse(JSON.stringify(topic.blocks[index]));
+            }
+            renderContent();
+        };
+
         window.cancelBlockEdit = function() { editingBlockIndex = null; editingTopicId = null; editingBlockData = null; renderContent(); };
-        window.handleEditBlockImages = function(event, index) { const files = Array.from(event.target.files); if (!editingBlockData) editingBlockData = { images: [] }; if (!editingBlockData.images) editingBlockData.images = []; const toAdd = files.slice(0, 3 - editingBlockData.images.length); toAdd.forEach(file => { const r = new FileReader(); r.onload = e => { editingBlockData.images.push(e.target.result); renderContent(); }; r.readAsDataURL(file); }); event.target.value = ''; };
-        window.removeEditBlockImage = function(blockIdx, imgIdx) { if (editingBlockData && editingBlockData.images) { editingBlockData.images.splice(imgIdx, 1); renderContent(); } };
-        window.saveBlockEdit = function(tid, index) { if (!isAdmin) return; const titleEl = document.getElementById('editBlockTitle-' + index); const textEl = document.getElementById('editBlockText-' + index); if (!titleEl || !textEl) return; const sec = data[currentCategory]?.sections[currentFilter.sectionId]; const topic = sec?.topics[tid]; if (topic && topic.blocks && topic.blocks[index]) { topic.blocks[index].title = titleEl.value.trim(); topic.blocks[index].text = textEl.value.trim(); if (editingBlockData && editingBlockData.images) { topic.blocks[index].images = [...editingBlockData.images]; } saveData(); } editingBlockIndex = null; editingTopicId = null; editingBlockData = null; renderContent(); };
-        window.deleteBlock = function(tid, index) { if (!isAdmin) return; if (!confirm('Удалить этот блок?')) return; const sec = data[currentCategory]?.sections[currentFilter.sectionId]; const topic = sec?.topics[tid]; if (topic && topic.blocks) { topic.blocks.splice(index, 1); saveData(); renderContent(); renderReference(); } };
+
+        window.handleEditBlockImages = function(event, index) {
+            const files = Array.from(event.target.files);
+            if (!editingBlockData) editingBlockData = { images: [] };
+            if (!editingBlockData.images) editingBlockData.images = [];
+            const toAdd = files.slice(0, 3 - editingBlockData.images.length);
+            toAdd.forEach(file => {
+                const r = new FileReader();
+                r.onload = e => { editingBlockData.images.push(e.target.result); renderContent(); };
+                r.readAsDataURL(file);
+            });
+            event.target.value = '';
+        };
+
+        window.removeEditBlockImage = function(blockIdx, imgIdx) {
+            if (editingBlockData && editingBlockData.images) {
+                editingBlockData.images.splice(imgIdx, 1);
+                renderContent();
+            }
+        };
+
+        window.saveBlockEdit = function(tid, index) {
+            if (!isAdmin) return;
+            const titleEl = document.getElementById('editBlockTitle-' + index);
+            const textEl = document.getElementById('editBlockText-' + index);
+            if (!titleEl || !textEl) return;
+            const sec = data[currentCategory]?.sections[currentFilter.sectionId];
+            const topic = sec?.topics[tid];
+            if (topic && topic.blocks && topic.blocks[index]) {
+                topic.blocks[index].title = titleEl.value.trim();
+                topic.blocks[index].text = textEl.value.trim();
+                if (editingBlockData && editingBlockData.images) {
+                    topic.blocks[index].images = [...editingBlockData.images];
+                }
+                saveData();
+            }
+            editingBlockIndex = null; editingTopicId = null; editingBlockData = null; renderContent();
+        };
+
+        window.deleteBlock = function(tid, index) {
+            if (!isAdmin) return;
+            if (!confirm('Удалить этот блок?')) return;
+            const sec = data[currentCategory]?.sections[currentFilter.sectionId];
+            const topic = sec?.topics[tid];
+            if (topic && topic.blocks) { topic.blocks.splice(index, 1); saveData(); renderContent(); renderReference(); }
+        };
 
         function renderFeed() {
             const contentArea = document.getElementById('contentArea');
@@ -547,12 +681,10 @@
                 return `<div class="publication-card">
                     ${p.title ? `<div class="pub-header"><div class="pub-title">${escapeHtml(p.title)}</div></div>` : ''}
                     <div class="pub-header" style="padding-top:${p.title ? '4px' : '16px'}">
-                        ${isEditing ? `
-                            <textarea class="edit-textarea" id="editText-${p.id}">${escapeHtml(p.text)}</textarea>
-                            ${(editingPubData && editingPubData.images && editingPubData.images.length > 0) ? `<div class="image-preview" style="margin-top:8px;">${editingPubData.images.map((img, idx) => `<div class="preview-item"><img src="${img}"><button class="remove-img" onclick="removeEditPubImage(${idx})">&times;</button></div>`).join('')}</div>` : ''}
-                            <div class="image-upload-area" onclick="document.getElementById('editPubImageInput').click()" style="margin-top:8px;"><div class="upload-text">📷 Добавить картинки</div><input type="file" id="editPubImageInput" accept="image/*" multiple onchange="handleEditPubImages(event)" style="display:none;"></div>
-                            <div class="edit-actions"><button class="edit-save" onclick="saveEdit('${p.id}')">Сохранить</button><button class="edit-cancel" onclick="cancelEdit()">Отмена</button></div>
-                        ` : (p.text ? `<div class="pub-text">${escapeHtml(p.text)}</div>` : '')}
+                        ${isEditing ? `<textarea class="edit-textarea" id="editText-${p.id}">${escapeHtml(p.text)}</textarea>
+                        ${(p.images && p.images.length > 0) ? `<div class="image-preview" id="editPubImages-${p.id}">${p.images.map((img, idx) => `<div class="preview-item"><img src="${img}"><button class="remove-img" onclick="removeEditPubImage('${p.id}', ${idx})">&times;</button></div>`).join('')}</div>` : ''}
+                        <div class="edit-actions"><button class="edit-save" onclick="saveEdit('${p.id}')">Сохранить</button><button class="edit-cancel" onclick="cancelEdit()">Отмена</button></div>`
+                        : (p.text ? `<div class="pub-text">${escapeHtml(p.text)}</div>` : '')}
                     </div>
                     ${!isEditing && imgCount > 0 ? `<div class="pub-images ${imgClass}">${(p.images||[]).map(img => `<img src="${img}" class="pub-img" onclick="event.stopPropagation(); viewImage('${img}')" loading="lazy">`).join('')}</div>` : ''}
                     <div class="pub-footer"><span>${p.date||''}</span>${isAdmin ? `<div class="pub-actions"><button class="pub-action-btn" onclick="startEdit('${p.id}')">Изменить</button><button class="pub-action-btn delete" onclick="deletePublication('${p.id}')">Удалить</button></div>` : ''}</div>
@@ -569,10 +701,18 @@
                 const imgClass = imgCount > 0 ? `img-${Math.min(imgCount, 9)}` : '';
                 let bubbleContent = '';
                 if (isDeleted) { bubbleContent = m.deletedBy === 'admin' && m.userId !== 'admin' ? '<i>Администратор удалил сообщение пользователя</i>' : '<i>Пользователь удалил своё сообщение</i>'; }
-                else { if (imgCount > 0) { bubbleContent += `<div class="chat-images ${imgClass}">${(m.images||[]).map(img => `<img src="${img}" onclick="viewImage('${img}')" loading="lazy">`).join('')}</div>`; } if (m.text) { bubbleContent += `<div>${escapeHtml(m.text)}</div>`; } }
-                let actionsHtml = ''; if (!isDeleted) { if (isOwn || isAdmin) { actionsHtml = `<div class="chat-message-actions">${isOwn ? '<button class="chat-action-btn" onclick="editChatMessage(\'' + m.id + '\')">Изменить</button>' : ''}<button class="chat-action-btn delete-btn" onclick="deleteChatMessage(\'' + m.id + '\')">Удалить</button></div>`; } }
+                else {
+                    // Сначала фото, потом текст
+                    if (imgCount > 0) { bubbleContent += `<div class="chat-images ${imgClass}">${(m.images||[]).map(img => `<img src="${img}" onclick="viewImage('${img}')" loading="lazy">`).join('')}</div>`; }
+                    if (m.text) { bubbleContent += `<div>${escapeHtml(m.text)}</div>`; }
+                }
+                let actionsHtml = '';
+                if (!isDeleted) { if (isOwn || isAdmin) { actionsHtml = `<div class="chat-message-actions">${isOwn ? '<button class="chat-action-btn" onclick="editChatMessage(\'' + m.id + '\')">Изменить</button>' : ''}<button class="chat-action-btn delete-btn" onclick="deleteChatMessage(\'' + m.id + '\')">Удалить</button></div>`; } }
                 const metaHtml = m.edited && !isDeleted ? '<span class="edited">изменено</span>' : '';
-                return `<div class="chat-message ${isOwn ? 'own' : ''} ${isDeleted ? 'deleted' : ''}"><div class="chat-avatar ${isOwn ? 'own-avatar' : ''}">${isOwn ? 'Я' : (m.userName || 'Г')}</div><div class="chat-bubble-wrapper"><div class="chat-bubble">${bubbleContent}</div>${metaHtml ? `<div class="chat-meta">${metaHtml}</div>` : ''}</div>${actionsHtml}</div>`;
+                return `<div class="chat-message ${isOwn ? 'own' : ''} ${isDeleted ? 'deleted' : ''}">
+                    <div class="chat-avatar ${isOwn ? 'own-avatar' : ''}">${isOwn ? 'Я' : (m.userName || 'Г')}</div>
+                    <div class="chat-bubble-wrapper"><div class="chat-bubble">${bubbleContent}</div>${metaHtml ? `<div class="chat-meta">${metaHtml}</div>` : ''}</div>${actionsHtml}
+                </div>`;
             }).join('');
             container.scrollTop = container.scrollHeight;
         }
@@ -583,25 +723,22 @@
         function renderChatImagePreview() { const container = document.getElementById('chatImagePreview'); container.innerHTML = uploadedChatImages.map((img, i) => `<div class="preview-item"><img src="${img}"><button class="remove-img" onclick="removeChatImage(${i})">&times;</button></div>`).join(''); }
         window.removeChatImage = function(i) { uploadedChatImages.splice(i, 1); renderChatImagePreview(); };
         window.sendChatMessage = function() { const input = document.getElementById('chatInput'); const text = input.value.trim(); if (!text && uploadedChatImages.length === 0) return; const msg = { id: generateId(), text, images: [...uploadedChatImages], userId: currentUserId, userName: 'Гость', timestamp: Date.now(), edited: false, deleted: false }; chatMessages.push(msg); saveChat(); input.value = ''; uploadedChatImages = []; renderChatImagePreview(); renderChat(); };
-
-        window.startEdit = function(id) { if (!isAdmin) return; editingPubId = id; const pub = publications.find(p => p.id === id); if (pub) { editingPubData = JSON.parse(JSON.stringify(pub)); } renderFeed(); };
-        window.cancelEdit = function() { editingPubId = null; editingPubData = null; renderFeed(); };
-        window.handleEditPubImages = function(event) { const files = Array.from(event.target.files); if (!editingPubData) editingPubData = { images: [] }; if (!editingPubData.images) editingPubData.images = []; const toAdd = files.slice(0, 8 - editingPubData.images.length); toAdd.forEach(file => { const r = new FileReader(); r.onload = e => { editingPubData.images.push(e.target.result); renderFeed(); }; r.readAsDataURL(file); }); event.target.value = ''; };
-        window.removeEditPubImage = function(idx) { if (editingPubData && editingPubData.images) { editingPubData.images.splice(idx, 1); renderFeed(); } };
-        window.saveEdit = function(id) { if (!isAdmin) return; const ta = document.getElementById('editText-' + id); if (!ta) return; const pub = publications.find(p => p.id === id); if (pub) { pub.text = ta.value.trim(); if (editingPubData && editingPubData.images) { pub.images = [...editingPubData.images]; } savePublications(); } editingPubId = null; editingPubData = null; renderFeed(); };
+        window.startEdit = function(id) { if (!isAdmin) return; editingPubId = id; renderFeed(); };
+        window.cancelEdit = function() { editingPubId = null; renderFeed(); };
+        window.saveEdit = function(id) { if (!isAdmin) return; const ta = document.getElementById('editText-' + id); if (!ta) return; const pub = publications.find(p => p.id === id); if (pub) { pub.text = ta.value.trim(); savePublications(); } editingPubId = null; renderFeed(); };
         window.deletePublication = function(id) { if (!isAdmin) return; if (confirm('Удалить?')) { publications = publications.filter(p => p.id !== id); savePublications(); renderFeed(); } };
-        window.goBackToFeed = function() { currentFilter = null; editingBlockIndex = null; editingTopicId = null; editingTopicNameId = null; editingBlockData = null; editingPubData = null; scrollToTopicId = null; renderContent(); renderReference(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+        window.goBackToFeed = function() { currentFilter = null; editingBlockIndex = null; editingTopicId = null; editingTopicNameId = null; editingBlockData = null; scrollToTopicId = null; renderContent(); renderReference(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
         window.toggleReference = function() { const dropdown = document.getElementById('refDropdown'); const btn = document.getElementById('refBtn'); if (dropdown.classList.contains('show')) { dropdown.classList.remove('show'); btn.classList.remove('active'); } else { renderReference(); dropdown.classList.add('show'); btn.classList.add('active'); } };
-        
         function renderReference() { const container = document.getElementById('refDropdown'); const cat = data[currentCategory]; if (!cat || !cat.sections) { container.innerHTML = '<div class="ref-empty">Нет разделов</div>'; return; } let html = ''; for (let sid in cat.sections) { const sec = cat.sections[sid]; const isOpen = currentFilter && currentFilter.sectionId === sid; html += `<div class="ref-section"><div class="ref-section-title ${isOpen?'open':''}" onclick="event.stopPropagation(); toggleRefSection(this,'${sid}')">${sec.name} <span class="arrow">▶</span></div><div class="ref-topics ${isOpen?'show':''}" id="refTopics-${sid}">${Object.entries(sec.topics).map(([tid,topic]) => `<div class="ref-topic ${currentFilter&&currentFilter.topicId===tid?'active-topic':''}" onclick="event.stopPropagation(); selectTopic('${sid}','${tid}')">${topic.name}</div>`).join('')}</div></div>`; } if (Object.keys(cat.sections).length === 0) html = '<div class="ref-empty">Нет разделов</div>'; container.innerHTML = html; }
         window.toggleRefSection = function(el, sid) { el.classList.toggle('open'); document.getElementById('refTopics-' + sid).classList.toggle('show'); };
-        window.selectTopic = function(sid, tid) { currentFilter = { sectionId: sid, topicId: tid }; editingPubId = null; editingBlockIndex = null; editingTopicId = null; editingTopicNameId = null; editingBlockData = null; editingPubData = null; scrollToTopicId = tid; renderContent(); renderReference(); closeReference(); };
-        window.selectSection = function(sid) { currentFilter = { sectionId: sid, topicId: null }; editingPubId = null; editingBlockIndex = null; editingTopicId = null; editingTopicNameId = null; editingBlockData = null; editingPubData = null; scrollToTopicId = null; renderContent(); renderReference(); closeReference(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+        window.selectTopic = function(sid, tid) { currentFilter = { sectionId: sid, topicId: tid }; editingPubId = null; editingBlockIndex = null; editingTopicId = null; editingTopicNameId = null; editingBlockData = null; scrollToTopicId = tid; renderContent(); renderReference(); closeReference(); };
+        window.selectSection = function(sid) { currentFilter = { sectionId: sid, topicId: null }; editingPubId = null; editingBlockIndex = null; editingTopicId = null; editingTopicNameId = null; editingBlockData = null; scrollToTopicId = null; renderContent(); renderReference(); closeReference(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
         function closeReference() { document.getElementById('refDropdown').classList.remove('show'); document.getElementById('refBtn').classList.remove('active'); }
         document.addEventListener('click', function(e) { const rw = document.querySelector('.ref-wrapper'); if (rw && !rw.contains(e.target)) closeReference(); });
 
-        window.openForm = function() { if (!isAdmin) return; selectedSectionId = null; selectedTopicId = null; uploadedRefImages = []; document.getElementById('sectionBtn').textContent = 'Выберите раздел'; document.getElementById('topicBtn').textContent = 'Выберите тему'; document.getElementById('refTitle').value = ''; document.getElementById('postText').value = ''; document.getElementById('sectionCreateInput').style.display = 'none'; document.getElementById('topicCreateInput').style.display = 'none'; document.getElementById('formOverlay').classList.add('show'); renderRefImagePreview(); closeAllSelects(); };
-        window.closeForm = function() { document.getElementById('formOverlay').classList.remove('show'); closeAllSelects(); };
+        window.openForm = function() { if (!isAdmin) return; selectedSectionId = null; selectedTopicId = null; uploadedRefImages = []; document.getElementById('sectionBtn').textContent = 'Выберите раздел'; document.getElementById('topicBtn').textContent = 'Выберите тему'; document.getElementById('refTitle').value = ''; document.getElementById('postText').value = ''; document.getElementById('sectionCreateInput').style.display = 'none'; document.getElementById('topicCreateInput').style.display = 'none'; document.getElementById('formOverlay').classList.add('show'); renderRefImagePreview(); closeAllSelects(); hideAllWarnings(); };
+        window.closeForm = function() { document.getElementById('formOverlay').classList.remove('show'); closeAllSelects(); hideAllWarnings(); };
+        function hideAllWarnings() { document.querySelectorAll('.char-warning').forEach(w => w.classList.remove('show')); }
         document.getElementById('formOverlay').addEventListener('click', function(e) { if (e.target === this) closeForm(); });
         window.toggleSectionSelect = function() { closeSelect('topicSelect'); const select = document.getElementById('sectionSelect'); let html = ''; const cat = data[currentCategory]; if (cat && cat.sections) { for (let sid in cat.sections) { html += `<div class="option" onclick="pickSection('${sid}','${escapeAttr(cat.sections[sid].name)}')">${cat.sections[sid].name}</div>`; } } if (html === '') html = '<div class="no-option">Нет разделов</div>'; select.innerHTML = html; select.classList.toggle('show'); };
         window.pickSection = function(sid, name) { selectedSectionId = sid; selectedTopicId = null; document.getElementById('sectionBtn').textContent = name; document.getElementById('topicBtn').textContent = 'Выберите тему'; closeSelect('sectionSelect'); updateTopicSelect(); };
@@ -609,14 +746,14 @@
         function updateTopicSelect() { const select = document.getElementById('topicSelect'); if (!selectedSectionId) { select.innerHTML = '<div class="no-option">Сначала выберите раздел</div>'; return; } const sec = data[currentCategory]?.sections[selectedSectionId]; if (!sec) { select.innerHTML = '<div class="no-option">Раздел не найден</div>'; return; } let html = ''; for (let tid in sec.topics) { html += `<div class="option" onclick="pickTopic('${tid}','${escapeAttr(sec.topics[tid].name)}')">${sec.topics[tid].name}</div>`; } if (html === '') html = '<div class="no-option">Нет тем</div>'; select.innerHTML = html; }
         window.pickTopic = function(tid, name) { selectedTopicId = tid; document.getElementById('topicBtn').textContent = name; closeSelect('topicSelect'); };
         window.showCreateInput = function(type) { if (type === 'section') { document.getElementById('sectionCreateInput').style.display = 'block'; document.getElementById('newSectionName').value = ''; document.getElementById('newSectionName').focus(); closeAllSelects(); } else { if (!selectedSectionId) { alert('Сначала выберите раздел'); return; } document.getElementById('topicCreateInput').style.display = 'block'; document.getElementById('newTopicName').value = ''; document.getElementById('newTopicName').focus(); closeAllSelects(); } };
-        window.createSection = function() { const name = document.getElementById('newSectionName').value.trim(); if (!name) return; const sid = generateId(); if (!data[currentCategory]) data[currentCategory] = { sections: {} }; data[currentCategory].sections[sid] = { name, topics: {} }; saveData(); selectedSectionId = sid; selectedTopicId = null; document.getElementById('sectionBtn').textContent = name; document.getElementById('topicBtn').textContent = 'Выберите тему'; document.getElementById('sectionCreateInput').style.display = 'none'; updateTopicSelect(); };
-        window.createTopic = function() { const name = document.getElementById('newTopicName').value.trim(); if (!name || !selectedSectionId) return; const tid = generateId(); const sec = data[currentCategory]?.sections[selectedSectionId]; if (!sec) return; sec.topics[tid] = { name, blocks: [] }; saveData(); selectedTopicId = tid; document.getElementById('topicBtn').textContent = name; document.getElementById('topicCreateInput').style.display = 'none'; updateTopicSelect(); };
+        window.createSection = function() { const name = document.getElementById('newSectionName').value.trim(); if (!name) return; if (name.split(/\s+/).some(w => w.length > 30)) { alert('Слово слишком длинное!'); return; } const sid = generateId(); if (!data[currentCategory]) data[currentCategory] = { sections: {} }; data[currentCategory].sections[sid] = { name, topics: {} }; saveData(); selectedSectionId = sid; selectedTopicId = null; document.getElementById('sectionBtn').textContent = name; document.getElementById('topicBtn').textContent = 'Выберите тему'; document.getElementById('sectionCreateInput').style.display = 'none'; updateTopicSelect(); };
+        window.createTopic = function() { const name = document.getElementById('newTopicName').value.trim(); if (!name || !selectedSectionId) return; if (name.split(/\s+/).some(w => w.length > 30)) { alert('Слово слишком длинное!'); return; } const tid = generateId(); const sec = data[currentCategory]?.sections[selectedSectionId]; if (!sec) return; sec.topics[tid] = { name, blocks: [] }; saveData(); selectedTopicId = tid; document.getElementById('topicBtn').textContent = name; document.getElementById('topicCreateInput').style.display = 'none'; updateTopicSelect(); };
         window.handleRefImages = function(event) { const files = Array.from(event.target.files); const toAdd = files.slice(0, 3 - uploadedRefImages.length); toAdd.forEach(file => { const r = new FileReader(); r.onload = e => { uploadedRefImages.push(e.target.result); renderRefImagePreview(); }; r.readAsDataURL(file); }); event.target.value = ''; };
         function renderRefImagePreview() { const c = document.getElementById('refImagePreview'); c.innerHTML = uploadedRefImages.map((img,i) => `<div class="preview-item"><img src="${img}"><button class="remove-img" onclick="removeRefImage(${i})">&times;</button></div>`).join(''); }
         window.removeRefImage = function(i) { uploadedRefImages.splice(i,1); renderRefImagePreview(); };
         window.submitPost = function() { if (!isAdmin) return; const title = document.getElementById('refTitle').value.trim(); const text = document.getElementById('postText').value.trim(); if (!text && uploadedRefImages.length === 0) { alert('Введите текст или добавьте картинки'); return; } if (!selectedSectionId || !selectedTopicId) { alert('Выберите раздел и тему'); return; } const sec = data[currentCategory]?.sections[selectedSectionId]; if (!sec?.topics[selectedTopicId]) return; if (!sec.topics[selectedTopicId].blocks) sec.topics[selectedTopicId].blocks = []; sec.topics[selectedTopicId].blocks.push({ title, text, images: [...uploadedRefImages] }); saveData(); document.getElementById('refTitle').value = ''; document.getElementById('postText').value = ''; uploadedRefImages = []; renderRefImagePreview(); closeForm(); if (currentFilter?.sectionId === selectedSectionId) { scrollToTopicId = selectedTopicId; renderContent(); } renderReference(); };
-        window.openPublishForm = function() { document.getElementById('pubTitle').value = ''; document.getElementById('pubText').value = ''; uploadedImages = []; renderImagePreview(); document.getElementById('publishOverlay').classList.add('show'); };
-        window.closePublishForm = function() { document.getElementById('publishOverlay').classList.remove('show'); };
+        window.openPublishForm = function() { document.getElementById('pubTitle').value = ''; document.getElementById('pubText').value = ''; uploadedImages = []; renderImagePreview(); document.getElementById('publishOverlay').classList.add('show'); hideAllWarnings(); };
+        window.closePublishForm = function() { document.getElementById('publishOverlay').classList.remove('show'); hideAllWarnings(); };
         document.getElementById('publishOverlay').addEventListener('click', function(e) { if (e.target === this) closePublishForm(); });
         window.handleImages = function(event) { const files = Array.from(event.target.files); const toAdd = files.slice(0, 8 - uploadedImages.length); toAdd.forEach(file => { const r = new FileReader(); r.onload = e => { uploadedImages.push(e.target.result); renderImagePreview(); }; r.readAsDataURL(file); }); event.target.value = ''; };
         function renderImagePreview() { const c = document.getElementById('imagePreview'); c.innerHTML = uploadedImages.map((img,i) => `<div class="preview-item"><img src="${img}"><button class="remove-img" onclick="removeImage(${i})">&times;</button></div>`).join(''); }
